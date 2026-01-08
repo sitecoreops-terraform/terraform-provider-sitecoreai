@@ -7,12 +7,21 @@ import (
 
 // Environment represents a Sitecore environment
 type Environment struct {
-	ID          string            `json:"id"`
-	Name        string            `json:"name"`
-	ProjectID   string            `json:"project_id"`
-	Description string            `json:"description,omitempty"`
-	Variables   map[string]string `json:"variables,omitempty"`
-	// Add other environment fields as needed based on API specification
+	ID                      string `json:"id"`
+	Name                    string `json:"name"`
+	ProjectID               string `json:"project_id"`
+	Host                    string `json:"host,omitempty"`
+	PlatformTenantId        string `json:"platformTenantId,omitempty"`
+	PlatformTenantName      string `json:"platformTenantName,omitempty"`
+	TenantType              string `json:"tenantType,omitempty"`
+	CreatedAt               string `json:"createdAt,omitempty"`
+	CreatedBy               string `json:"createdBy,omitempty"`
+	LastUpdatedBy           string `json:"lastUpdatedBy,omitempty"`
+	LastUpdatedAt           string `json:"lastUpdatedAt,omitempty"`
+	IsDeleted               bool   `json:"isDeleted,omitempty"`
+	PreviewContextId        string `json:"previewContextId,omitempty"`
+	LiveContextId           string `json:"liveContextId,omitempty"`
+	HighAvailabilityEnabled bool   `json:"highAvailabilityEnabled,omitempty"`
 }
 
 // CreateEnvironment creates a new environment for a project

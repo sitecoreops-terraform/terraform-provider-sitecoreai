@@ -5,7 +5,6 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -30,11 +29,21 @@ type environmentDataSource struct {
 
 // environmentDataSourceModel maps the data source schema data
 type environmentDataSourceModel struct {
-	ID          types.String `tfsdk:"id"`
-	Name        types.String `tfsdk:"name"`
-	ProjectID   types.String `tfsdk:"project_id"`
-	Description types.String `tfsdk:"description"`
-	Variables   types.Map    `tfsdk:"variables"`
+	ID                      types.String `tfsdk:"id"`
+	Name                    types.String `tfsdk:"name"`
+	ProjectID               types.String `tfsdk:"project_id"`
+	Host                    types.String `tfsdk:"host"`
+	PlatformTenantId        types.String `tfsdk:"platform_tenant_id"`
+	PlatformTenantName      types.String `tfsdk:"platform_tenant_name"`
+	TenantType              types.String `tfsdk:"tenant_type"`
+	CreatedAt               types.String `tfsdk:"created_at"`
+	CreatedBy               types.String `tfsdk:"created_by"`
+	LastUpdatedBy           types.String `tfsdk:"last_updated_by"`
+	LastUpdatedAt           types.String `tfsdk:"last_updated_at"`
+	IsDeleted               types.Bool   `tfsdk:"is_deleted"`
+	PreviewContextId        types.String `tfsdk:"preview_context_id"`
+	LiveContextId           types.String `tfsdk:"live_context_id"`
+	HighAvailabilityEnabled types.Bool   `tfsdk:"high_availability_enabled"`
 }
 
 // Metadata returns the data source type name
@@ -59,13 +68,52 @@ func (d *environmentDataSource) Schema(_ context.Context, _ datasource.SchemaReq
 				Description: "The ID of the project to search within",
 				Required:    true,
 			},
-			"description": schema.StringAttribute{
-				Description: "The description of the environment",
+			"host": schema.StringAttribute{
+				Description: "The host of the environment",
 				Computed:    true,
 			},
-			"variables": schema.MapAttribute{
-				Description: "Environment variables as key-value pairs",
-				ElementType: types.StringType,
+			"platform_tenant_id": schema.StringAttribute{
+				Description: "The platform tenant ID",
+				Computed:    true,
+			},
+			"platform_tenant_name": schema.StringAttribute{
+				Description: "The platform tenant name",
+				Computed:    true,
+			},
+			"tenant_type": schema.StringAttribute{
+				Description: "The tenant type",
+				Computed:    true,
+			},
+			"created_at": schema.StringAttribute{
+				Description: "When the environment was created",
+				Computed:    true,
+			},
+			"created_by": schema.StringAttribute{
+				Description: "Who created the environment",
+				Computed:    true,
+			},
+			"last_updated_by": schema.StringAttribute{
+				Description: "Who last updated the environment",
+				Computed:    true,
+			},
+			"last_updated_at": schema.StringAttribute{
+				Description: "When the environment was last updated",
+				Computed:    true,
+			},
+			"is_deleted": schema.BoolAttribute{
+				Description: "Whether the environment is deleted",
+				Computed:    true,
+			},
+			"preview_context_id": schema.StringAttribute{
+				Description: "The preview context ID",
+				Computed:    true,
+			},
+			"live_context_id": schema.StringAttribute{
+				Description: "The live context ID",
+				Computed:    true,
+			},
+			"high_availability_enabled": schema.BoolAttribute{
+				Description: "Whether high availability is enabled",
 				Computed:    true,
 			},
 		},
@@ -122,18 +170,18 @@ func (d *environmentDataSource) Read(ctx context.Context, req datasource.ReadReq
 	state.ID = types.StringValue(foundEnvironment.ID)
 	state.Name = types.StringValue(foundEnvironment.Name)
 	state.ProjectID = types.StringValue(foundEnvironment.ProjectID)
-	state.Description = types.StringValue(foundEnvironment.Description)
-
-	// Convert variables map to Terraform types
-	if len(foundEnvironment.Variables) > 0 {
-		variablesAttr := make(map[string]attr.Value)
-		for key, value := range foundEnvironment.Variables {
-			variablesAttr[key] = types.StringValue(value)
-		}
-		state.Variables = types.MapValueMust(types.StringType, variablesAttr)
-	} else {
-		state.Variables = types.MapNull(types.StringType)
-	}
+	state.Host = types.StringValue(foundEnvironment.Host)
+	state.PlatformTenantId = types.StringValue(foundEnvironment.PlatformTenantId)
+	state.PlatformTenantName = types.StringValue(foundEnvironment.PlatformTenantName)
+	state.TenantType = types.StringValue(foundEnvironment.TenantType)
+	state.CreatedAt = types.StringValue(foundEnvironment.CreatedAt)
+	state.CreatedBy = types.StringValue(foundEnvironment.CreatedBy)
+	state.LastUpdatedBy = types.StringValue(foundEnvironment.LastUpdatedBy)
+	state.LastUpdatedAt = types.StringValue(foundEnvironment.LastUpdatedAt)
+	state.IsDeleted = types.BoolValue(foundEnvironment.IsDeleted)
+	state.PreviewContextId = types.StringValue(foundEnvironment.PreviewContextId)
+	state.LiveContextId = types.StringValue(foundEnvironment.LiveContextId)
+	state.HighAvailabilityEnabled = types.BoolValue(foundEnvironment.HighAvailabilityEnabled)
 
 	// Set state
 	diags = resp.State.Set(ctx, &state)
