@@ -128,6 +128,7 @@ func (p *sitecoreProvider) Configure(ctx context.Context, req provider.Configure
 func (p *sitecoreProvider) DataSources(_ context.Context) []func() datasource.DataSource {
 	return []func() datasource.DataSource{
 		NewProjectDataSource,
+		NewEnvironmentDataSource,
 	}
 }
 
