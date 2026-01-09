@@ -9,7 +9,7 @@ import (
 type Environment struct {
 	ID                      string `json:"id"`
 	Name                    string `json:"name"`
-	ProjectID               string `json:"project_id"`
+	ProjectID               string `json:"projectId"`
 	Host                    string `json:"host,omitempty"`
 	PlatformTenantId        string `json:"platformTenantId,omitempty"`
 	PlatformTenantName      string `json:"platformTenantName,omitempty"`
@@ -24,13 +24,41 @@ type Environment struct {
 	HighAvailabilityEnabled bool   `json:"highAvailabilityEnabled,omitempty"`
 }
 
+type CreateEnvironmentRequest struct {
+	Name       string `json:"name"`
+	TenantType int    `json:"tenantType,omitempty"`
+	Type       string `json:"type"`
+}
+
+type EnvironmentType int
+
+const (
+	EnvironmentTypeCombined EnvironmentType = 0
+	EnvironmentTypeCmOnly   EnvironmentType = 1
+)
+
 // CreateEnvironment creates a new environment for a project
-func (c *Client) CreateEnvironment(projectID string, environment Environment) (*Environment, error) {
+func (c *Client) CreateEnvironment(projectID string, name string, isProd bool, environmentType EnvironmentType) (*Environment, error) {
+
+	tenantType := 0
+	if isProd {
+		tenantType = 1
+	}
+
+	body := CreateEnvironmentRequest{
+		Name:       name,
+		TenantType: tenantType,
+	}
+
+	if environmentType == EnvironmentTypeCmOnly {
+		body.Type = "cm"
+	}
+
 	// Create request options
 	opts := RequestOptions{
 		Method: "POST",
 		Path:   fmt.Sprintf("/api/projects/v1/%s/environments", projectID),
-		Body:   environment,
+		Body:   body,
 	}
 
 	// Make the request
