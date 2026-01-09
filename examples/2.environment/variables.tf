@@ -21,5 +21,11 @@ variable "project_name" {
 variable "environment_name" {
   description = "The name of the SitecoreAI environment"
   type        = string
-  default     = "dev"
+  default     = "dev2"
+}
+
+variable "environment_is_prod" {
+  description = "Environment is using production SLA"
+  type        = bool
+  default     = true
 }

@@ -60,3 +60,7 @@ This is a very basic example, only reading from SitecoreAI but still showing how
 - Use outputs to display project information
 
 This example is safe to run even with your existing environment, as it will not make any changes, even when running `terraform apply`
+
+### [2. Create environment](2.environment/)
+
+This is a simple example that creates a new environment for an exising project.
