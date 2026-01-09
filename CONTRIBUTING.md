@@ -1,14 +1,13 @@
 # SitecoreAI Terraform provider
 
-The project is mainly a Terraform provider built using
+The project is a Terraform provider built using
 * Go
 * Terraform Plugin Framework
 
-There are two packages in the `pkg` folder.
-* `pkg/apiclient/` which is a client to interact with the SitecoreAI Deploy API
+The folder structure:
+* `pkg/apiclient/` which is a client to interact with the SitecoreAI Deploy API, see [SitecoreAI Deploy API: OpenAPI Specification](https://xmclouddeploy-api.sitecorecloud.io/swagger/v1/swagger.json)
 * `pkg/provider/` which is the Terraform provider that exposes resources and datasources and uses the apiclient to call the api.
-
-Additionally there are some terraform examples in the `examples/` folder to show how the provider can be used in terraform modules.
+* `examples/` with several terraform examples to show how the provider can be used in terraform modules.
 
 ## Testing api client
 
