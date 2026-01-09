@@ -87,12 +87,13 @@ func (p *sitecoreProvider) Configure(ctx context.Context, req provider.Configure
 
 	clientID := os.Getenv("SITECORE_CLIENT_ID")
 	clientSecret := os.Getenv("SITECORE_CLIENT_SECRET")
+	proxy := os.Getenv("HTTPS_PROXY")
 
 	// Override with configuration values if provided
-	if !config.ClientID.IsNull() {
+	if !config.ClientID.IsNull() && len(config.ClientID.ValueString()) > 0 {
 		clientID = config.ClientID.ValueString()
 	}
-	if !config.ClientSecret.IsNull() {
+	if !config.ClientSecret.IsNull() && len(config.ClientSecret.ValueString()) > 0 {
 		clientSecret = config.ClientSecret.ValueString()
 	}
 
@@ -106,7 +107,7 @@ func (p *sitecoreProvider) Configure(ctx context.Context, req provider.Configure
 	}
 
 	// Create a new Sitecore API client
-	client := apiclient.NewClient(clientID, clientSecret)
+	client := apiclient.NewClientWithProxy(clientID, clientSecret, proxy)
 
 	// Authenticate the client
 	err := client.Authenticate()
