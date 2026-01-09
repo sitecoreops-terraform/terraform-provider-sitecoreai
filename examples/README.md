@@ -54,7 +54,9 @@ terraform apply -var="sitecore_client_id=your_client_id" -var="sitecore_client_s
 
 ### [1. Reading/](1.reading/)
 
-A very basic example, showing
+This is a very basic example, only reading from SitecoreAI but still showing how to
 - Configure provider credentials
 - Look up existing project using data sources
 - Use outputs to display project information
+
+This example is safe to run even with your existing environment, as it will not make any changes, even when running `terraform apply`
