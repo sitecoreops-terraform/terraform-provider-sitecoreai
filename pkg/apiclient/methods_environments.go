@@ -84,7 +84,7 @@ func (c *Client) GetEnvironment(projectID string, environmentID string) (*Enviro
 	// Create request options
 	opts := RequestOptions{
 		Method: "GET",
-		Path:   fmt.Sprintf("/api/projects/v1/%s/environments/%s", projectID, environmentID),
+		Path:   fmt.Sprintf("/api/environments/v1/%s", environmentID),
 	}
 
 	// Make the request
@@ -110,7 +110,7 @@ func (c *Client) UpdateEnvironment(projectID string, environmentID string, envir
 	// Create request options
 	opts := RequestOptions{
 		Method: "PUT",
-		Path:   fmt.Sprintf("/api/projects/v1/%s/environments/%s", projectID, environmentID),
+		Path:   fmt.Sprintf("/api/environments/v1/%s", environmentID),
 		Body:   environment,
 	}
 
@@ -130,7 +130,7 @@ func (c *Client) DeleteEnvironment(projectID string, environmentID string) error
 	// Create request options
 	opts := RequestOptions{
 		Method: "DELETE",
-		Path:   fmt.Sprintf("/api/projects/v1/%s/environments/%s", projectID, environmentID),
+		Path:   fmt.Sprintf("/api/environments/v1/%s", environmentID),
 	}
 
 	// Make the request
