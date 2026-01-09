@@ -33,3 +33,25 @@ Build the provider:
 ```sh
 go build -o out/terraform-provider-sitecoreai
 ```
+
+## Diagnostics
+
+The communication can be captured by specifying a proxy server eg. Burp
+
+```bash
+# When running in devcontainers and proxy server on host
+export HTTPS_PROXY="http://host.docker.internal:8081"
+
+# When running both project and proxy server on host
+export HTTPS_PROXY="http://localhost:8081"
+```
+
+It is necessary to trust the certificate, eg. Burp can export the certificate in DER format.
+
+```bash
+# Convert DER public certificate to .pem format
+openssl x509 -inform der -in burp.der -out burp.pem
+
+# Set REQUESTS_CA_BUNDLE to trust the certificate(s)
+export REQUESTS_CA_BUNDLE="$(pwd)/burp.pem"
+```

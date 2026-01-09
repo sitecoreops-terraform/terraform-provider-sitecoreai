@@ -5,8 +5,6 @@ import (
 	"testing"
 )
 
-const proxy = "http://host.docker.internal:8081"
-
 func TestClientAuthentication(t *testing.T) {
 	// Get client credentials from environment variables
 	clientID := os.Getenv("SITECORE_CLIENT_ID")
@@ -16,7 +14,7 @@ func TestClientAuthentication(t *testing.T) {
 	}
 
 	// Create new client
-	client := NewClientWithProxy(clientID, clientSecret, proxy)
+	client := NewClientFromEnv()
 
 	// Test authentication
 	err := client.Authenticate()
@@ -41,7 +39,7 @@ func TestGetProjects(t *testing.T) {
 	}
 
 	// Create new client
-	client := NewClientWithProxy(clientID, clientSecret, proxy)
+	client := NewClientFromEnv()
 
 	// Authenticate
 	err := client.Authenticate()
@@ -72,7 +70,7 @@ func TestGetProjectAndEnvironments(t *testing.T) {
 	}
 
 	// Create new client
-	client := NewClientWithProxy(clientID, clientSecret, proxy)
+	client := NewClientFromEnv()
 
 	// Authenticate
 	err := client.Authenticate()

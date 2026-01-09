@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"os"
 )
 
 type Client struct {
@@ -22,6 +23,15 @@ type Client struct {
 
 func NewClient(clientID string, clientSecret string) *Client {
 	return NewClientWithProxy(clientID, clientSecret, "")
+}
+
+func NewClientFromEnv() *Client {
+	clientID := os.Getenv("SITECORE_CLIENT_ID")
+	clientSecret := os.Getenv("SITECORE_CLIENT_SECRET")
+
+	proxy := os.Getenv("HTTPS_PROXY")
+
+	return NewClientWithProxy(clientID, clientSecret, proxy)
 }
 
 func NewClientWithProxy(clientID string, clientSecret string, proxyURL string) *Client {
