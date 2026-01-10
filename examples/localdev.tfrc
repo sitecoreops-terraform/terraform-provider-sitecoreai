@@ -1,6 +1,6 @@
 provider_installation {
   dev_overrides {
-    "sitecoreops/sitecoreai" = "/workspaces/terraform-provider-sitecoreai/out"
+    "sitecoreops/sitecore" = "/workspaces/terraform-provider-sitecoreai/out"
   }
 
   direct {
