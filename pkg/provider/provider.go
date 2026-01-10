@@ -1,3 +1,5 @@
+//go:generate go run github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs generate --provider-name sitecore
+
 // Package provider contains the Sitecore Terraform provider implementation
 package provider
 
