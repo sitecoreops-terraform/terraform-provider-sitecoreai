@@ -122,3 +122,7 @@ This example is safe to run even with your existing environment, as it will not 
 ### [2. Create environment](2.environment/)
 
 This is a simple example that creates a new environment for an exising project.
+
+### [3. Automation clients](3.automation_clients/)
+
+This is an example to create automation clients to use for other integrations (eg. Azure DevOps pipelines etc.)
