@@ -84,9 +84,9 @@ func (d *editingSecretDataSource) Read(ctx context.Context, req datasource.ReadR
 
 	// Handle empty secret case
 	if secret == "" {
-		resp.Diagnostics.AddError(
+		resp.Diagnostics.AddWarning(
 			"Empty editing secret",
-			"The editing secret for environment "+state.EnvironmentID.ValueString()+" is empty",
+			"The editing secret for environment "+state.EnvironmentID.ValueString()+" is empty, this might be the case until there have been a deployment to the environment",
 		)
 		return
 	}

@@ -7,3 +7,7 @@ resource "sitecore_cm_environment" "main" {
   name       = var.environment_name
   is_prod    = var.environment_is_prod
 }
+
+data "sitecore_editing_secret" "main" {
+  environment_id = sitecore_cm_environment.main.id
+}
