@@ -28,26 +28,84 @@ The provider requires two configuration parameters:
 - `client_id`: Your Sitecore AI API client ID
 - `client_secret`: Your Sitecore AI API client secret
 
-#### Option A: Environment Variables
+#### Option A: Use variables
+
+```hcl
+terraform {
+  required_providers {
+    sitecore = {
+      source = "sitecoreops/sitecoreai"
+    }
+  }
+}
+
+provider "sitecore" {
+  client_id     = var.sitecore_client_id
+  client_secret = var.sitecore_client_secret
+}
+
+variable "sitecore_client_id" {
+  description = "The client ID for authentication"
+  type        = string
+  sensitive   = true
+}
+
+variable "sitecore_client_secret" {
+  description = "The client secret for authentication"
+  type        = string
+  sensitive   = true
+}
+```
+
+There are several ways to specify the variables, all standard terraform functionality:
+
+* Specify the variables from the command line when running commands
+
+    ```bash
+    terraform apply -var="sitecore_client_id=your_client_id" -var="sitecore_client_secret=your_client_secret"
+    ```
+
+* Create a `.tfvars` file with your variables and use that when running
+
+    ```hcl
+    sitecore_client_id     = "y4AKvexbrg7WVSXnXfXyAgs63cu4Abt8"
+    sitecore_client_secret = "a1mrZlL2bt94DplYUgrEqr2gu1iyyclRqRo3mnI6zeNDE6Gl95U4TnmyDzM7SoVq"
+    ```
+
+    ```bash
+    terraform apply -var-file=".tfvars"
+    ```
+
+* Specify the variables using default terraform syntax for environment variables
+
+    ```bash
+    export TF_VAR_sitecore_client_id="your_client_id"
+    export TF_VAR_sitecore_client_secret="your_client_secret"
+
+    terraform apply
+    ```
+
+#### Option B: Provider Environment Variables
+
+The provider implementation will use environment variables if those are specified:
+
+```hcl
+terraform {
+  required_providers {
+    sitecore = {
+      source = "sitecoreops/sitecoreai"
+    }
+  }
+}
+
+provider "sitecore" {}
+```
 
 ```bash
 export SITECORE_CLIENT_ID="your_client_id"
 export SITECORE_CLIENT_SECRET="your_client_secret"
-```
 
-#### Option B: Variables File
-
-Create `auto.tfvars` with your actual credentials and variables:
-
-```hcl
-sitecore_client_id     = "y4AKvexbrg7WVSXnXfXyAgs63cu4Abt8"
-sitecore_client_secret = "a1mrZlL2bt94DplYUgrEqr2gu1iyyclRqRo3mnI6zeNDE6Gl95U4TnmyDzM7SoVq"
-```
-
-#### Option C: Command Line
-
-```bash
-terraform apply -var="sitecore_client_id=your_client_id" -var="sitecore_client_secret=your_client_secret"
+terraform apply
 ```
 
 ## Available Examples
