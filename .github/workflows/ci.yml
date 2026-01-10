@@ -51,7 +51,6 @@ jobs:
       - name: generate
         run: |
           cd tools
-          go install
           go generate
 
       - name: git diff
