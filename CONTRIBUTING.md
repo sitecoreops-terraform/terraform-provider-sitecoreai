@@ -31,7 +31,7 @@ gofmt -s -w -e .
 ## Building
 
 ```bash
-go build ./...
+go build
 ```
 
 ## Testing api client

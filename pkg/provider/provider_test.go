@@ -15,8 +15,8 @@ func TestProviderMetadata(t *testing.T) {
 
 	p.Metadata(context.Background(), req, &resp)
 
-	if resp.TypeName != "sitecore" {
-		t.Errorf("Expected TypeName to be 'sitecore', got '%s'", resp.TypeName)
+	if resp.TypeName != "sitecoreai" {
+		t.Errorf("Expected TypeName to be 'sitecoreai', got '%s'", resp.TypeName)
 	}
 
 	if resp.Version != "test-version" {

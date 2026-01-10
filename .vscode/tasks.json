@@ -5,14 +5,11 @@
 			"type": "go",
 			"label": "build workspace",
 			"command": "build",
-			"args": [
-				"./..."
-			],
 			"problemMatcher": [
 				"$go"
 			],
 			"group": "build",
-			"detail": "cd /workspaces/terraform-provider-sitecoreai; go build ./..."
+			"detail": "cd /workspaces/terraform-provider-sitecoreai; go build"
 		}
 	]
 }
