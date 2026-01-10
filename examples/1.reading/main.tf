@@ -6,3 +6,7 @@ data "sitecore_environment" "main" {
   project_id = data.sitecore_project.main.id
   name       = var.environment_name
 }
+
+data "sitecore_editing_secret" "main" {
+  environment_id = data.sitecore_environment.main.id
+}

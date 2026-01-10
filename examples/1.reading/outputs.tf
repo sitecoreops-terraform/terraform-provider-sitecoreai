@@ -32,3 +32,8 @@ output "existing_environment_preview_context_id" {
   description = "The preview context id of the existing environment"
   value       = data.sitecore_environment.main.preview_context_id
 }
+
+output "existing_environment_editing_secret" {
+  description = "The JSS Editing Secret to use for the existing environment"
+  value       = data.sitecore_editing_secret.main.secret
+}
