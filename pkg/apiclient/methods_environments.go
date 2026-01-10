@@ -3,6 +3,7 @@ package apiclient
 import (
 	"encoding/json"
 	"fmt"
+	"time"
 )
 
 // Environment represents a Sitecore environment
@@ -57,7 +58,7 @@ func (c *Client) CreateEnvironment(projectID string, name string, isProd bool, e
 	// Create request options
 	opts := RequestOptions{
 		Method: "POST",
-		Path:   fmt.Sprintf("/api/projects/v1/%s/environments", projectID),
+		Path:   fmt.Sprintf("/api/projects/v2/%s/environments", projectID),
 		Body:   body,
 	}
 
@@ -115,7 +116,7 @@ func (c *Client) GetEnvironment(projectID string, environmentID string) (*Enviro
 	// Create request options
 	opts := RequestOptions{
 		Method: "GET",
-		Path:   fmt.Sprintf("/api/environments/v1/%s", environmentID),
+		Path:   fmt.Sprintf("/api/environments/v2/%s", environmentID),
 	}
 
 	// Make the request

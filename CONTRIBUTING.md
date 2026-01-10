@@ -5,7 +5,7 @@ The project is a Terraform provider built using
 * Terraform Plugin Framework
 
 The folder structure:
-* `pkg/apiclient/` which is a client to interact with the SitecoreAI Deploy API, see [SitecoreAI Deploy API: OpenAPI Specification](https://xmclouddeploy-api.sitecorecloud.io/swagger/v1/swagger.json)
+* `pkg/apiclient/` which is a client to interact with the SitecoreAI Deploy API, see [SitecoreAI Deploy API v1: OpenAPI Specification](https://xmclouddeploy-api.sitecorecloud.io/swagger/v1/swagger.json) and [SitecoreAI Deploy API v2: OpenAPI Specification](https://xmclouddeploy-api.sitecorecloud.io/swagger/v2/swagger.json)
 * `pkg/provider/` which is the Terraform provider that exposes resources and datasources and uses the apiclient to call the api.
 * `examples/` with several terraform examples to show how the provider can be used in terraform modules.
 
