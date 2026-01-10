@@ -146,5 +146,6 @@ func (p *sitecoreProvider) Resources(_ context.Context) []func() resource.Resour
 		NewEdgeClientResource,
 		NewDeployClientResource,
 		NewEditingHostBuildClientResource,
+		NewEnvironmentVariableResource,
 	}
 }

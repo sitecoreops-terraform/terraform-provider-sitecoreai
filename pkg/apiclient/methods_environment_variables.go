@@ -6,11 +6,11 @@ import (
 )
 
 // GetEnvironmentVariables retrieves variables for an environment
-func (c *Client) GetEnvironmentVariables(projectID string, environmentID string) (map[string]string, error) {
+func (c *Client) GetEnvironmentVariables(environmentID string) (map[string]string, error) {
 	// Create request options
 	opts := RequestOptions{
 		Method: "GET",
-		Path:   fmt.Sprintf("/api/projects/v1/%s/environments/%s/variables", projectID, environmentID),
+		Path:   fmt.Sprintf("/api/environments/v1/%s/variables", environmentID),
 	}
 
 	// Make the request
@@ -32,11 +32,11 @@ func (c *Client) GetEnvironmentVariables(projectID string, environmentID string)
 }
 
 // SetEnvironmentVariable sets a variable for an environment
-func (c *Client) SetEnvironmentVariable(projectID string, environmentID string, variableName string, variableValue string) error {
+func (c *Client) SetEnvironmentVariable(environmentID string, variableName string, variableValue string) error {
 	// Create request options
 	opts := RequestOptions{
 		Method: "POST",
-		Path:   fmt.Sprintf("/api/projects/v1/%s/environments/%s/variables/%s", projectID, environmentID, variableName),
+		Path:   fmt.Sprintf("/api/environments/v1/%s/variables/%s", environmentID, variableName),
 		Body:   map[string]string{"value": variableValue},
 	}
 
@@ -52,11 +52,11 @@ func (c *Client) SetEnvironmentVariable(projectID string, environmentID string, 
 }
 
 // DeleteEnvironmentVariable deletes a variable from an environment
-func (c *Client) DeleteEnvironmentVariable(projectID string, environmentID string, variableName string) error {
+func (c *Client) DeleteEnvironmentVariable(environmentID string, variableName string) error {
 	// Create request options
 	opts := RequestOptions{
 		Method: "DELETE",
-		Path:   fmt.Sprintf("/api/projects/v1/%s/environments/%s/variables/%s", projectID, environmentID, variableName),
+		Path:   fmt.Sprintf("/api/environments/v1/%s/variables/%s", environmentID, variableName),
 	}
 
 	// Make the request
