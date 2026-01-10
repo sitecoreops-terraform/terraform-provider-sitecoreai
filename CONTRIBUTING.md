@@ -10,10 +10,28 @@ The folder structure:
 * `examples/` with several terraform examples to show how the provider can be used in terraform modules.
 * `docs/` contains the provider documentation for the Terraform registry. Everything here is automatically generated and should not be edited manually.
 
+## Initial setup
+
+```bash
+go install -v ./...
+```
+
 ## Linting
 
 ```bash
 golangci-lint run
+```
+
+## Formatting
+
+```bash
+gofmt -s -w -e .
+```
+
+## Building
+
+```bash
+go build ./...
 ```
 
 ## Testing api client
@@ -34,12 +52,7 @@ go test ./pkg/apiclient/... -v
 
 ## Testing terraform provider
 
-Build the provider:
-
 ```sh
-# Build the provider
-go build -o out/terraform-provider-sitecoreai
-
 # Run a specific test, here client authentication
 go test ./pkg/provider/... -v -run TestProviderMetadata
 
@@ -72,7 +85,6 @@ The documentation in `/docs` is generated using the `tfplugindocs` tool:
 
 ```bash
 cd tools
-go install
 go generate
 ```
 
