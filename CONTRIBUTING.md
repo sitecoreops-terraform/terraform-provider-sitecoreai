@@ -31,7 +31,14 @@ go test ./pkg/apiclient/... -v
 Build the provider:
 
 ```sh
+# Build the provider
 go build -o out/terraform-provider-sitecoreai
+
+# Run a specific test, here client authentication
+go test ./pkg/provider/... -v -run TestProviderMetadata
+
+# Run all tests
+go test ./pkg/provider/... -v
 ```
 
 ## Documentation

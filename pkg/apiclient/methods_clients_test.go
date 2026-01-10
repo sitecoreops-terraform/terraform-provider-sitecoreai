@@ -19,7 +19,7 @@ func TestCreateCMClient(t *testing.T) {
 		// Return a mock response
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
-		w.Write([]byte(`{
+		_, _ = w.Write([]byte(`{
 			"name": "test-cm-client",
 			"description": "Test CM Client",
 			"clientId": "test-client-id",
@@ -75,7 +75,7 @@ func TestCreateEdgeClient(t *testing.T) {
 		// Return a mock response
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
-		w.Write([]byte(`{
+		_, _ = w.Write([]byte(`{
 			"name": "test-edge-client",
 			"description": "Test Edge Client",
 			"clientId": "test-client-id",
@@ -131,7 +131,7 @@ func TestCreateDeployClient(t *testing.T) {
 		// Return a mock response
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
-		w.Write([]byte(`{
+		_, _ = w.Write([]byte(`{
 			"name": "test-deploy-client",
 			"description": "Test Deploy Client",
 			"clientId": "test-client-id",
@@ -187,7 +187,7 @@ func TestCreateEditingHostBuildClient(t *testing.T) {
 		// Return a mock response
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
-		w.Write([]byte(`{
+		_, _ = w.Write([]byte(`{
 			"name": "test-ehbuild-client",
 			"description": "Test Editing Host Build Client",
 			"clientId": "test-client-id",
@@ -243,7 +243,7 @@ func TestDeleteClient(t *testing.T) {
 		// Return a mock response
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusAccepted)
-		w.Write([]byte(`{}`))
+		_, _ = w.Write([]byte(`{}`))
 	}))
 	defer server.Close()
 
