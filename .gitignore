@@ -79,3 +79,6 @@ terraform.rc
 
 ## Certificates
 *.pem
+
+## Result
+terraform-provider-sitecoreai

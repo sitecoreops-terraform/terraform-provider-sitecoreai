@@ -1,0 +1,2387 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "Sitecore XM Cloud Deploy API",
+    "description": "Web API for managing organizations, projects, environments and deployments in the XM Cloud Deploy system",
+    "version": "2"
+  },
+  "paths": {
+    "/api/deployments/v1/{deploymentId}/source": {
+      "post": {
+        "tags": [
+          "Deployments"
+        ],
+        "summary": "Upload source code to a deployment (Auth policies: ValidateOrganization, xmclouddeploy.deployments:manage)",
+        "operationId": "UploadSource",
+        "parameters": [
+          {
+            "name": "deploymentId",
+            "in": "path",
+            "description": "The Deployment ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Source code upload accepted"
+          },
+          "400": {
+            "description": "Problem validating the source code upload.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Invalid deployment ID.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "A deployment is already running for this deployment.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Upload too large.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Unsupported media type during upload.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/deployments/v2/{deploymentId}/source": {
+      "post": {
+        "tags": [
+          "Deployments"
+        ],
+        "summary": "Upload source code to a deployment (Auth policies: ValidateOrganization, xmclouddeploy.deployments:manage)",
+        "operationId": "UploadSource",
+        "parameters": [
+          {
+            "name": "deploymentId",
+            "in": "path",
+            "description": "The Deployment ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Source code upload accepted"
+          },
+          "400": {
+            "description": "Problem validating the source code upload.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Invalid deployment ID.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "A deployment is already running for this deployment.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Upload too large.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Unsupported media type during upload.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/environments/v2/{environmentId}/variables/{variable}/{target}": {
+      "delete": {
+        "tags": [
+          "Environments"
+        ],
+        "summary": "Deletes an environment variable by target (Auth policies: ValidateOrganization, xmclouddeploy.deployments:manage, xmclouddeploy.environments:manage)",
+        "operationId": "VariablesByTarget",
+        "parameters": [
+          {
+            "name": "environmentId",
+            "in": "path",
+            "description": "The environment ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "variable",
+            "in": "path",
+            "description": "The environment variable name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "target",
+            "in": "path",
+            "description": "The target name. If target is empty, deletes the environment variable for all targets",
+            "allowEmptyValue": true,
+            "schema": {
+              "type": "string",
+              "nullable": true
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Deleted environment variable successfully."
+          },
+          "404": {
+            "description": "Invalid environment ID or environment variable name.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/environments/v2": {
+      "get": {
+        "tags": [
+          "Environments"
+        ],
+        "summary": "Get list of all environments (Auth policies: ValidateOrganization, xmclouddeploy.environments:manage)",
+        "operationId": "GetAll",
+        "parameters": [
+          {
+            "name": "Types",
+            "in": "query",
+            "description": "Filter environments based on the type, value can be cm, or eh.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "ProjectIds",
+            "in": "query",
+            "description": "Filter environments based on the project ids",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "PageNumber",
+            "in": "query",
+            "description": "Page number",
+            "schema": {
+              "maximum": 2147483647,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "description": "Page size",
+            "schema": {
+              "maximum": 50,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of environemnts successfully retrieved.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Sitecore.XmCloud.GitOps.Models.PagedResponse`1[Sitecore.XmCloud.GitOps.Models.Environment.V2.EnvironmentDtoV2]"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Sitecore.XmCloud.GitOps.Models.PagedResponse`1[Sitecore.XmCloud.GitOps.Models.Environment.V2.EnvironmentDtoV2]"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Sitecore.XmCloud.GitOps.Models.PagedResponse`1[Sitecore.XmCloud.GitOps.Models.Environment.V2.EnvironmentDtoV2]"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/environments/v2/{environmentId}/deployments": {
+      "get": {
+        "tags": [
+          "Environments"
+        ],
+        "summary": "Retrieves all deployments for a given environment. (Auth policies: ValidateOrganization, xmclouddeploy.deployments:manage, xmclouddeploy.environments:manage)",
+        "operationId": "GetDeployments",
+        "parameters": [
+          {
+            "name": "environmentId",
+            "in": "path",
+            "description": "The environment ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Deployments response retrieved successfully.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Sitecore.XmCloud.GitOps.Models.Deployment.V2.DeploymentDto"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Sitecore.XmCloud.GitOps.Models.Deployment.V2.DeploymentDto"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Sitecore.XmCloud.GitOps.Models.Deployment.V2.DeploymentDto"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Invalid environment ID.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Environments"
+        ],
+        "summary": "Deploy to an environment. (Auth policies: ValidateOrganization, xmclouddeploy.deployments:manage, xmclouddeploy.environments:manage)",
+        "operationId": "CreateDeployment",
+        "parameters": [
+          {
+            "name": "environmentId",
+            "in": "path",
+            "description": "The environment ID.0",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "redeploy",
+            "in": "query",
+            "description": "When redeploy is true, deploys with the existing source, whether that is from a commit on a linked repository or has been uploaded previously.",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Deployment created successfully.",
+            "headers": {
+              "location": {
+                "description": "Location of the newly created Deployment.",
+                "schema": {
+                  "type": "string",
+                  "description": "Location of the newly created Deployment.",
+                  "format": ""
+                }
+              }
+            },
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Sitecore.XmCloud.GitOps.Models.DeploymentCreateDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Sitecore.XmCloud.GitOps.Models.DeploymentCreateDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Sitecore.XmCloud.GitOps.Models.DeploymentCreateDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Invalid environment ID.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict creating deployment.  Deployment already running for this environment.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service unavailable.  Retry later."
+          }
+        }
+      }
+    },
+    "/api/environments/v2/{environmentId}/promote/{deploymentId}": {
+      "post": {
+        "tags": [
+          "Environments"
+        ],
+        "summary": "Creates a new deployment for an environment from an existing deployment. (Auth policies: ValidateOrganization, xmclouddeploy.deployments:manage, xmclouddeploy.environments:manage)",
+        "operationId": "Promote",
+        "parameters": [
+          {
+            "name": "environmentId",
+            "in": "path",
+            "description": "The environment ID of the target environment.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "deploymentId",
+            "in": "path",
+            "description": "The deployment ID of the source deployment.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Promotion request accepted.",
+            "headers": {
+              "location": {
+                "description": "Location of the newly created Deployment.",
+                "schema": {
+                  "type": "string",
+                  "description": "Location of the newly created Deployment.",
+                  "format": ""
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Invalid environment ID or invalid deployment ID.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict during promotion.  Attempted to promote a deployment that is in a failure state.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service unavailable.  Retry later."
+          }
+        }
+      }
+    },
+    "/api/environments/v2/{environmentId}": {
+      "get": {
+        "tags": [
+          "Environments"
+        ],
+        "summary": "Retrieves an environment by ID. (Auth policies: ValidateEnvironment)",
+        "operationId": "Get",
+        "parameters": [
+          {
+            "name": "environmentId",
+            "in": "path",
+            "description": "The environment ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Sitecore.XmCloud.GitOps.Models.Environment.V2.EnvironmentDtoV2"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Sitecore.XmCloud.GitOps.Models.Environment.V2.EnvironmentDtoV2"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Sitecore.XmCloud.GitOps.Models.Environment.V2.EnvironmentDtoV2"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/organizations/v2/{organizationId}": {
+      "get": {
+        "tags": [
+          "Organizations"
+        ],
+        "summary": "Returns the organization by ID (Auth policies: ValidateOrganization, xmclouddeploy.deployments:manage, xmclouddeploy.environments:manage, xmclouddeploy.projects:manage)",
+        "operationId": "Get",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "The organization ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "Unable to find organization",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Organization retrieved successfully",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Sitecore.XmCloud.GitOps.Models.Organization.OrganizationDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Sitecore.XmCloud.GitOps.Models.Organization.OrganizationDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Sitecore.XmCloud.GitOps.Models.Organization.OrganizationDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/organizations/v2/{organizationId}/health": {
+      "get": {
+        "tags": [
+          "Organizations"
+        ],
+        "summary": "Retrieves the health of the organization by ID (Auth policies: ValidateOrganization, xmclouddeploy.deployments:manage, xmclouddeploy.environments:manage, xmclouddeploy.projects:manage)",
+        "operationId": "GetOrganizationHealth",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "The organization ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Organization health response successful.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Sitecore.XmCloud.GitOps.Models.OrganizationResourcesDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Sitecore.XmCloud.GitOps.Models.OrganizationResourcesDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Sitecore.XmCloud.GitOps.Models.OrganizationResourcesDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error."
+          },
+          "503": {
+            "description": "Service endpoint is currently unavaible.  Please retry later."
+          }
+        }
+      }
+    },
+    "/api/projects/v2/validatename": {
+      "get": {
+        "tags": [
+          "Projects"
+        ],
+        "summary": "Validates that a project name is unique. (Auth policies: ValidateOrganization, xmclouddeploy.projects:manage)",
+        "operationId": "ValidateProjectName",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "description": "Name of the project to validate for uniqueness.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Retrieved the validation result successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Sitecore.XmCloud.GitOps.Models.ValidateProjectNameResponseDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/projects/v2/{projectId}": {
+      "get": {
+        "tags": [
+          "Projects"
+        ],
+        "summary": "Gets a project by project ID. (Auth policies: ValidateOrganization, xmclouddeploy.projects:manage)",
+        "operationId": "Get",
+        "parameters": [
+          {
+            "name": "projectId",
+            "in": "path",
+            "description": "The project ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the project found by the project ID.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Sitecore.XmCloud.GitOps.Models.Project.V2.ProjectDtoV2"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid project ID."
+          }
+        }
+      }
+    },
+    "/api/projects/v2": {
+      "get": {
+        "tags": [
+          "Projects"
+        ],
+        "summary": "Retrieves a list of Projects. (Auth policies: ValidateOrganization, xmclouddeploy.projects:manage)",
+        "operationId": "Get",
+        "responses": {
+          "200": {
+            "description": "Projects retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Sitecore.XmCloud.GitOps.Models.Project.V2.ProjectDtoV2"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/projects/v2/{projectId}/environments": {
+      "get": {
+        "tags": [
+          "Projects"
+        ],
+        "summary": "Gets a list of environments in the project by project ID. (Auth policies: ValidateOrganization, xmclouddeploy.environments:manage, xmclouddeploy.projects:manage)",
+        "operationId": "GetEnvironments",
+        "parameters": [
+          {
+            "name": "projectId",
+            "in": "path",
+            "description": "The project ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returned a list of environment successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Sitecore.XmCloud.GitOps.Models.Environment.V2.EnvironmentDtoV2"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Invalid project ID.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Projects"
+        ],
+        "summary": "Create environment for the project. (Auth policies: ValidateOrganization, xmclouddeploy.environments:manage, xmclouddeploy.projects:manage)",
+        "operationId": "CreateEnvironment",
+        "parameters": [
+          {
+            "name": "projectId",
+            "in": "path",
+            "description": "The project ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "An environment creation request.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Sitecore.XmCloud.GitOps.Models.Environment.V2.EnvironmentCreateRequestDtoV2"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Sitecore.XmCloud.GitOps.Models.Environment.V2.EnvironmentCreateRequestDtoV2"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Sitecore.XmCloud.GitOps.Models.Environment.V2.EnvironmentCreateRequestDtoV2"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Environment created successfully.",
+            "headers": {
+              "location": {
+                "description": "Location of the newly created Environment.",
+                "schema": {
+                  "type": "string",
+                  "description": "Location of the newly created Environment.",
+                  "format": ""
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Sitecore.XmCloud.GitOps.Models.Environment.V2.EnvironmentDtoV2"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Exceeded the number of environments allowed for the project according to the limitations of the organization subscription.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Invalid project ID.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Environment name is not unique.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error."
+          },
+          "503": {
+            "description": "Environment configuration store or inventory is unavailable.  Environment creation is temporarily disabled.  Please retry."
+          }
+        }
+      }
+    },
+    "/api/sourcecontrol/v2/integration/validate": {
+      "get": {
+        "tags": [
+          "Source Control"
+        ],
+        "summary": "Validates that a source control integration is valid. (Auth policies: ValidateOrganization, xmclouddeploy.sourcecontrol:manage)",
+        "operationId": "ValidateIntegration",
+        "parameters": [
+          {
+            "name": "IntegrationId",
+            "in": "query",
+            "description": "Source control integration ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Retrieved the source control validation result successfully.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Sitecore.XmCloud.GitOps.Models.ValidateIntegrationResponseDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Sitecore.XmCloud.GitOps.Models.ValidateIntegrationResponseDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Sitecore.XmCloud.GitOps.Models.ValidateIntegrationResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Invalid Integration ID.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ValidationProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ValidationProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ValidationProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service temporarily unavailable."
+          }
+        }
+      }
+    },
+    "/api/sourcecontrol/v2/integrations": {
+      "get": {
+        "tags": [
+          "Source Control"
+        ],
+        "summary": "Get all source control integrations with project references (Auth policies: ValidateOrganization, xmclouddeploy.sourcecontrol:manage)",
+        "operationId": "GetAllIntegrations",
+        "parameters": [
+          {
+            "name": "PageNumber",
+            "in": "query",
+            "description": "Page number",
+            "schema": {
+              "maximum": 2147483647,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "description": "Page size",
+            "schema": {
+              "maximum": 50,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Retrieved the list of integration successfully.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Sitecore.XmCloud.GitOps.Models.PagedResponse`1[Sitecore.XmCloud.GitOps.Models.SourceControlIntegrationDto]"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Sitecore.XmCloud.GitOps.Models.PagedResponse`1[Sitecore.XmCloud.GitOps.Models.SourceControlIntegrationDto]"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Sitecore.XmCloud.GitOps.Models.PagedResponse`1[Sitecore.XmCloud.GitOps.Models.SourceControlIntegrationDto]"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/sourcecontrol/v2/hook/subscribe": {
+      "put": {
+        "tags": [
+          "Source Control"
+        ],
+        "summary": "Subscibe to the git events for the given provider (Auth policies: ValidateOrganization, xmclouddeploy.sourcecontrol:manage)",
+        "operationId": "Subscribe",
+        "requestBody": {
+          "description": "A service hook subscription request.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Sitecore.XmCloud.GitOps.Models.SourceControl.ServiceHookSubscriptionRequestDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Sitecore.XmCloud.GitOps.Models.SourceControl.ServiceHookSubscriptionRequestDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Sitecore.XmCloud.GitOps.Models.SourceControl.ServiceHookSubscriptionRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable"
+          }
+        }
+      }
+    },
+    "/api/sourcecontrol/v2/repository/validate": {
+      "get": {
+        "tags": [
+          "Source Control"
+        ],
+        "summary": "Validates that a repository is valid. (Auth policies: ValidateOrganization, xmclouddeploy.sourcecontrol:manage)",
+        "operationId": "ValidateRepository",
+        "parameters": [
+          {
+            "name": "RepositoryName",
+            "in": "query",
+            "description": "Source control integration repository name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "IntegrationId",
+            "in": "query",
+            "description": "Source control integration ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Retrieved the validation result successfully.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Sitecore.XmCloud.GitOps.Models.ValidateRepositoryResponseDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Sitecore.XmCloud.GitOps.Models.ValidateRepositoryResponseDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Sitecore.XmCloud.GitOps.Models.ValidateRepositoryResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ValidationProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ValidationProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ValidationProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service temporarily unavailable.  Retry later"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Microsoft.AspNetCore.Mvc.ProblemDetails": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "detail": {
+            "type": "string",
+            "nullable": true
+          },
+          "instance": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": { }
+      },
+      "Microsoft.AspNetCore.Mvc.ValidationProblemDetails": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "detail": {
+            "type": "string",
+            "nullable": true
+          },
+          "instance": {
+            "type": "string",
+            "nullable": true
+          },
+          "errors": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": { }
+      },
+      "Sitecore.XmCloud.GitOps.Enums.EnvironmentType": {
+        "enum": [
+          0,
+          1
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "Sitecore.XmCloud.GitOps.Enums.LockedBy": {
+        "enum": [
+          "DemoSolution",
+          "ProjectConvert",
+          "ProjectRevert"
+        ],
+        "type": "string"
+      },
+      "Sitecore.XmCloud.GitOps.Enums.SourceControlAccountType": {
+        "enum": [
+          0,
+          1
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "Sitecore.XmCloud.GitOps.Enums.Status": {
+        "enum": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "Sitecore.XmCloud.GitOps.Enums.SubscriptionType": {
+        "enum": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "Sitecore.XmCloud.GitOps.Models.Databases": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Sitecore.XmCloud.GitOps.Models.Deployment.V2.DeploymentDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "projectId": {
+            "type": "string",
+            "nullable": true
+          },
+          "projectName": {
+            "type": "string",
+            "nullable": true
+          },
+          "environmentId": {
+            "type": "string",
+            "nullable": true
+          },
+          "environmentName": {
+            "type": "string",
+            "nullable": true
+          },
+          "organizationId": {
+            "type": "string",
+            "nullable": true
+          },
+          "organizationName": {
+            "type": "string",
+            "nullable": true
+          },
+          "buildId": {
+            "type": "string",
+            "nullable": true
+          },
+          "sitecoreMajorVersion": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "triggerMessage": {
+            "type": "string",
+            "nullable": true
+          },
+          "startedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "completedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "provisioningStatus": {
+            "$ref": "#/components/schemas/Sitecore.XmCloud.GitOps.Enums.Status"
+          },
+          "provisioningStartedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "provisioningCompletedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "provisioningLastFailureMessage": {
+            "type": "string",
+            "nullable": true
+          },
+          "buildStatus": {
+            "$ref": "#/components/schemas/Sitecore.XmCloud.GitOps.Enums.Status"
+          },
+          "buildStartedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "buildCompletedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "buildLastFailureMessage": {
+            "type": "string",
+            "nullable": true
+          },
+          "deploymentStatus": {
+            "$ref": "#/components/schemas/Sitecore.XmCloud.GitOps.Enums.Status"
+          },
+          "deploymentStartedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "deploymentSubmittedTime": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "deploymentReconcilingTime": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "deploymentCompletedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "deploymentLastFailureMessage": {
+            "type": "string",
+            "nullable": true
+          },
+          "postActionStatus": {
+            "$ref": "#/components/schemas/Sitecore.XmCloud.GitOps.Enums.Status"
+          },
+          "postActionStartedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "postActionCompletedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "postActionLastFailureMessage": {
+            "type": "string",
+            "nullable": true
+          },
+          "vercelStatus": {
+            "$ref": "#/components/schemas/Sitecore.XmCloud.GitOps.Enums.Status"
+          },
+          "vercelStartedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "vercelCompletedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "commitId": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "createdBy": {
+            "type": "string",
+            "nullable": true
+          },
+          "isCanceled": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "calculatedStatus": {
+            "$ref": "#/components/schemas/Sitecore.XmCloud.GitOps.Enums.Status"
+          },
+          "environmentType": {
+            "type": "string",
+            "description": "Type of environment, it can be eh or cm.",
+            "nullable": true
+          },
+          "isDeploymentFailed": {
+            "type": "boolean",
+            "nullable": true,
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Sitecore.XmCloud.GitOps.Models.DeploymentCreateDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "projectId": {
+            "type": "string",
+            "nullable": true
+          },
+          "environmentId": {
+            "type": "string",
+            "nullable": true
+          },
+          "organizationId": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "createdBy": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Sitecore.XmCloud.GitOps.Models.Environment.EnvironmentForProjectDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Environment ID",
+            "nullable": true
+          },
+          "type": {
+            "type": "string",
+            "description": "Environment type",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Sitecore.XmCloud.GitOps.Models.Environment.V2.EditingHostEnvironmentDetails": {
+        "type": "object",
+        "properties": {
+          "cmEnvironmentId": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Sitecore.XmCloud.GitOps.Models.Environment.V2.EnvironmentCreateRequestDtoV2": {
+        "required": [
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "maxLength": 100,
+            "minLength": 0,
+            "type": "string"
+          },
+          "tenantType": {
+            "$ref": "#/components/schemas/Sitecore.XmCloud.GitOps.Enums.EnvironmentType"
+          },
+          "repositoryBranch": {
+            "type": "string",
+            "nullable": true
+          },
+          "sitecoreMajorVersion": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "deployOnCommit": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "editingHostEnvironmentDetails": {
+            "$ref": "#/components/schemas/Sitecore.XmCloud.GitOps.Models.Environment.V2.EditingHostEnvironmentDetails"
+          },
+          "repositoryDetails": {
+            "$ref": "#/components/schemas/Sitecore.XmCloud.GitOps.Models.Environment.V2.RepositoryDetails"
+          },
+          "type": {
+            "pattern": "^(eh|cm)$",
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Sitecore.XmCloud.GitOps.Models.Environment.V2.EnvironmentDtoV2": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Environment ID",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "description": "Environment name",
+            "nullable": true
+          },
+          "projectId": {
+            "type": "string",
+            "description": "Project ID",
+            "nullable": true
+          },
+          "projectName": {
+            "type": "string",
+            "description": "Project name",
+            "nullable": true
+          },
+          "organizationId": {
+            "type": "string",
+            "description": "Organization ID",
+            "nullable": true
+          },
+          "organizationName": {
+            "type": "string",
+            "description": "Organization name",
+            "nullable": true
+          },
+          "zone": {
+            "type": "string",
+            "description": "Environment zone",
+            "nullable": true
+          },
+          "host": {
+            "type": "string",
+            "description": "Environment host",
+            "nullable": true
+          },
+          "sitecoreMajorVersion": {
+            "type": "integer",
+            "description": "Sitecore XM major version",
+            "format": "int32",
+            "nullable": true
+          },
+          "sitecoreMinorVersion": {
+            "type": "integer",
+            "description": "Sitecore XM minor version",
+            "format": "int32",
+            "nullable": true
+          },
+          "platformTenantId": {
+            "type": "string",
+            "description": "Platform Tenant ID",
+            "nullable": true
+          },
+          "platformTenantName": {
+            "type": "string",
+            "description": "Platfrom Tenant Name",
+            "nullable": true
+          },
+          "repositoryBranch": {
+            "type": "string",
+            "description": "Repository branch if linked to source control and branch",
+            "nullable": true
+          },
+          "tenantType": {
+            "type": "string",
+            "description": "Type of the tenant - Prod or Non-Prod",
+            "nullable": true
+          },
+          "provisioningStatus": {
+            "$ref": "#/components/schemas/Sitecore.XmCloud.GitOps.Enums.Status"
+          },
+          "provisioningLastFailureMessage": {
+            "type": "string",
+            "description": "Last failure message of the deployment",
+            "nullable": true
+          },
+          "deployOnCommit": {
+            "type": "boolean",
+            "description": "True when environment is set to deploy automatically when commits are made to source control",
+            "nullable": true
+          },
+          "lastSuccessfulDeploymentId": {
+            "type": "string",
+            "description": "The Last Successful DeploymentID",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "Date when the environment was created",
+            "format": "date-time"
+          },
+          "createdBy": {
+            "type": "string",
+            "description": "User who created the environment",
+            "nullable": true
+          },
+          "lastUpdatedBy": {
+            "type": "string",
+            "description": "user who last updated the environment",
+            "nullable": true
+          },
+          "lastUpdatedAt": {
+            "type": "string",
+            "description": "Date when the environment was last updated",
+            "format": "date-time"
+          },
+          "isDeleted": {
+            "type": "boolean",
+            "description": "True when the environment has been soft-deleted"
+          },
+          "previewContextId": {
+            "type": "string",
+            "description": "Preview Context ID",
+            "nullable": true
+          },
+          "liveContextId": {
+            "type": "string",
+            "description": "Live Context ID",
+            "nullable": true
+          },
+          "highAvailabilityEnabled": {
+            "type": "boolean",
+            "description": "Gets or sets a flag indicating if the environment's deployments should support high availability.",
+            "nullable": true
+          },
+          "editingHostEnvironmentDetails": {
+            "$ref": "#/components/schemas/Sitecore.XmCloud.GitOps.Models.Environment.V2.EditingHostEnvironmentDetails"
+          },
+          "repositoryDetails": {
+            "$ref": "#/components/schemas/Sitecore.XmCloud.GitOps.Models.Environment.V2.RepositoryDetails"
+          },
+          "type": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Sitecore.XmCloud.GitOps.Models.Environment.V2.RepositoryDetails": {
+        "type": "object",
+        "properties": {
+          "repository": {
+            "type": "string",
+            "nullable": true
+          },
+          "repositoryId": {
+            "type": "string",
+            "nullable": true
+          },
+          "repositoryLinkedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "sourceControlIntegrationId": {
+            "type": "string",
+            "nullable": true
+          },
+          "sourceControlIntegrationName": {
+            "type": "string",
+            "nullable": true
+          },
+          "repositoryRelativePath": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Sitecore.XmCloud.GitOps.Models.Organization.OrganizationDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "region": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "createdBy": {
+            "type": "string",
+            "nullable": true
+          },
+          "tier": {
+            "type": "string",
+            "nullable": true
+          },
+          "subscriptionType": {
+            "$ref": "#/components/schemas/Sitecore.XmCloud.GitOps.Enums.SubscriptionType"
+          },
+          "contentServiceEnabled": {
+            "type": "boolean",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Sitecore.XmCloud.GitOps.Models.OrganizationResourcesDto": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "nullable": true
+          },
+          "resources": {
+            "$ref": "#/components/schemas/Sitecore.XmCloud.GitOps.Models.Resources"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Sitecore.XmCloud.GitOps.Models.PagedResponse`1[Sitecore.XmCloud.GitOps.Models.Environment.V2.EnvironmentDtoV2]": {
+        "type": "object",
+        "properties": {
+          "totalCount": {
+            "type": "integer",
+            "description": "Total number of items",
+            "format": "int32"
+          },
+          "pageSize": {
+            "type": "integer",
+            "description": "Page size",
+            "format": "int32"
+          },
+          "pageNumber": {
+            "type": "integer",
+            "description": "Page number",
+            "format": "int32"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Sitecore.XmCloud.GitOps.Models.Environment.V2.EnvironmentDtoV2"
+            },
+            "description": "List of items of type T",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Sitecore.XmCloud.GitOps.Models.PagedResponse`1[Sitecore.XmCloud.GitOps.Models.SourceControlIntegrationDto]": {
+        "type": "object",
+        "properties": {
+          "totalCount": {
+            "type": "integer",
+            "description": "Total number of items",
+            "format": "int32"
+          },
+          "pageSize": {
+            "type": "integer",
+            "description": "Page size",
+            "format": "int32"
+          },
+          "pageNumber": {
+            "type": "integer",
+            "description": "Page number",
+            "format": "int32"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Sitecore.XmCloud.GitOps.Models.SourceControlIntegrationDto"
+            },
+            "description": "List of items of type T",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Sitecore.XmCloud.GitOps.Models.Project.V2.ProjectDtoV2": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The project ID",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "description": "The project name",
+            "nullable": true
+          },
+          "organizationId": {
+            "type": "string",
+            "description": "The organization ID",
+            "nullable": true
+          },
+          "organizationName": {
+            "type": "string",
+            "description": "The organization name",
+            "nullable": true
+          },
+          "region": {
+            "type": "string",
+            "description": "The organization region",
+            "nullable": true
+          },
+          "repository": {
+            "type": "string",
+            "description": "The source control repository of the project if linked",
+            "nullable": true
+          },
+          "repositoryId": {
+            "type": "string",
+            "description": "The source control repository ID of the project if linked",
+            "nullable": true
+          },
+          "sourceControlIntegrationId": {
+            "type": "string",
+            "description": "The source control integration ID of the project if linked",
+            "nullable": true
+          },
+          "sourceControlIntegrationName": {
+            "type": "string",
+            "description": "The source control integration name of the project if linked",
+            "nullable": true
+          },
+          "repositoryLinkedAt": {
+            "type": "string",
+            "description": "The Date that project linked to a source control repository",
+            "format": "date-time",
+            "nullable": true
+          },
+          "sitecoreMajorVersion": {
+            "type": "integer",
+            "description": "The Sitecore XM major version",
+            "format": "int32",
+            "nullable": true
+          },
+          "sitecoreMinorVersion": {
+            "type": "integer",
+            "description": "The Sitecore XM minor version",
+            "format": "int32",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "The date when the project was created",
+            "format": "date-time"
+          },
+          "createdBy": {
+            "type": "string",
+            "description": "The user that created the project",
+            "nullable": true
+          },
+          "lastUpdatedBy": {
+            "type": "string",
+            "description": "The user who last updated the project",
+            "nullable": true
+          },
+          "lastUpdatedAt": {
+            "type": "string",
+            "description": "The date when the project was last updated",
+            "format": "date-time"
+          },
+          "environments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Sitecore.XmCloud.GitOps.Models.Environment.EnvironmentForProjectDto"
+            },
+            "description": "An array of environment details",
+            "nullable": true
+          },
+          "isLocked": {
+            "type": "boolean",
+            "description": "Indicates whether the project is locked"
+          },
+          "lockedBy": {
+            "$ref": "#/components/schemas/Sitecore.XmCloud.GitOps.Enums.LockedBy"
+          },
+          "lockedAt": {
+            "type": "string",
+            "description": "Indicates when the project was locked.",
+            "format": "date-time",
+            "nullable": true
+          },
+          "repositoryRelativePath": {
+            "type": "string",
+            "description": "Repository relative path",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Sitecore.XmCloud.GitOps.Models.Registry": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Sitecore.XmCloud.GitOps.Models.Resources": {
+        "type": "object",
+        "properties": {
+          "databases": {
+            "$ref": "#/components/schemas/Sitecore.XmCloud.GitOps.Models.Databases"
+          },
+          "registry": {
+            "$ref": "#/components/schemas/Sitecore.XmCloud.GitOps.Models.Registry"
+          },
+          "storage": {
+            "$ref": "#/components/schemas/Sitecore.XmCloud.GitOps.Models.Storage"
+          },
+          "searchIndex": {
+            "$ref": "#/components/schemas/Sitecore.XmCloud.GitOps.Models.SearchIndex"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Sitecore.XmCloud.GitOps.Models.SearchIndex": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Sitecore.XmCloud.GitOps.Models.SourceControl.ServiceHookSubscriptionRequestDto": {
+        "required": [
+          "integrationId",
+          "repositoryName"
+        ],
+        "type": "object",
+        "properties": {
+          "repositoryName": {
+            "minLength": 1,
+            "type": "string",
+            "description": "Repository name"
+          },
+          "integrationId": {
+            "minLength": 1,
+            "type": "string",
+            "description": "Source control integration ID"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Sitecore.XmCloud.GitOps.Models.SourceControlIntegrationDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "account": {
+            "type": "string",
+            "nullable": true
+          },
+          "provider": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "createdBy": {
+            "type": "string",
+            "nullable": true
+          },
+          "accountType": {
+            "$ref": "#/components/schemas/Sitecore.XmCloud.GitOps.Enums.SourceControlAccountType"
+          },
+          "projectIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Sitecore.XmCloud.GitOps.Models.Storage": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Sitecore.XmCloud.GitOps.Models.ValidateIntegrationResponseDto": {
+        "type": "object",
+        "properties": {
+          "isValid": {
+            "type": "boolean",
+            "description": "True when valid"
+          },
+          "message": {
+            "type": "string",
+            "description": "Validation message",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Sitecore.XmCloud.GitOps.Models.ValidateProjectNameResponseDto": {
+        "type": "object",
+        "properties": {
+          "isValid": {
+            "type": "boolean",
+            "description": "True when the project name is valid"
+          },
+          "message": {
+            "type": "string",
+            "description": "Message for the project name validation",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Sitecore.XmCloud.GitOps.Models.ValidateRepositoryResponseDto": {
+        "type": "object",
+        "properties": {
+          "isValid": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "securitySchemes": {
+      "Bearer": {
+        "type": "apiKey",
+        "description": "Authorization header using the Bearer scheme (Example: 'Bearer your_jwt')",
+        "name": "Authorization",
+        "in": "header"
+      }
+    }
+  },
+  "security": [
+    {
+      "Bearer": [ ]
+    }
+  ]
+}
