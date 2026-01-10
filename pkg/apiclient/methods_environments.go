@@ -8,27 +8,42 @@ import (
 
 // Environment represents a Sitecore environment
 type Environment struct {
-	ID                      string `json:"id"`
-	Name                    string `json:"name"`
-	ProjectID               string `json:"projectId"`
-	Host                    string `json:"host,omitempty"`
-	PlatformTenantId        string `json:"platformTenantId,omitempty"`
-	PlatformTenantName      string `json:"platformTenantName,omitempty"`
-	TenantType              string `json:"tenantType,omitempty"`
-	CreatedAt               string `json:"createdAt,omitempty"`
-	CreatedBy               string `json:"createdBy,omitempty"`
-	LastUpdatedBy           string `json:"lastUpdatedBy,omitempty"`
-	LastUpdatedAt           string `json:"lastUpdatedAt,omitempty"`
-	IsDeleted               bool   `json:"isDeleted,omitempty"`
-	PreviewContextId        string `json:"previewContextId,omitempty"`
-	LiveContextId           string `json:"liveContextId,omitempty"`
-	HighAvailabilityEnabled bool   `json:"highAvailabilityEnabled,omitempty"`
+	ID                             string `json:"id,omitempty"`
+	Name                           string `json:"name,omitempty"`
+	ProjectID                      string `json:"projectId,omitempty"`
+	ProjectName                    string `json:"projectName,omitempty"`
+	OrganizationID                 string `json:"organizationId,omitempty"`
+	OrganizationName               string `json:"organizationName,omitempty"`
+	Zone                           string `json:"zone,omitempty"`
+	Host                           string `json:"host,omitempty"`
+	SitecoreMajorVersion           int    `json:"sitecoreMajorVersion,omitempty"`
+	SitecoreMinorVersion           int    `json:"sitecoreMinorVersion,omitempty"`
+	PlatformTenantId               string `json:"platformTenantId,omitempty"`
+	PlatformTenantName             string `json:"platformTenantName,omitempty"`
+	RepositoryBranch               string `json:"repositoryBranch,omitempty"`
+	TenantType                     string `json:"tenantType,omitempty"`
+	ProvisioningStatus             int    `json:"provisioningStatus,omitempty"`
+	ProvisioningLastFailureMessage string `json:"provisioningLastFailureMessage,omitempty"`
+	DeployOnCommit                 bool   `json:"deployOnCommit,omitempty"`
+	LastSuccessfulDeploymentId     string `json:"lastSuccessfulDeploymentId,omitempty"`
+	CreatedAt                      string `json:"createdAt,omitempty"`
+	CreatedBy                      string `json:"createdBy,omitempty"`
+	LastUpdatedBy                  string `json:"lastUpdatedBy,omitempty"`
+	LastUpdatedAt                  string `json:"lastUpdatedAt,omitempty"`
+	IsDeleted                      bool   `json:"isDeleted,omitempty"`
+	PreviewContextId               string `json:"previewContextId,omitempty"`
+	LiveContextId                  string `json:"liveContextId,omitempty"`
+	HighAvailabilityEnabled        bool   `json:"highAvailabilityEnabled,omitempty"`
+	Type                           string `json:"type,omitempty"`
 }
 
 type CreateEnvironmentRequest struct {
-	Name       string `json:"name"`
-	TenantType int    `json:"tenantType,omitempty"`
-	Type       string `json:"type"`
+	Name                 string `json:"name"`
+	TenantType           int    `json:"tenantType,omitempty"`
+	Type                 string `json:"type,omitempty"`
+	RepositoryBranch     string `json:"repositoryBranch,omitempty"`
+	SitecoreMajorVersion int    `json:"sitecoreMajorVersion,omitempty"`
+	DeployOnCommit       bool   `json:"deployOnCommit,omitempty"`
 }
 
 type EnvironmentType int
@@ -36,9 +51,10 @@ type EnvironmentType int
 const (
 	EnvironmentTypeCombined EnvironmentType = 0
 	EnvironmentTypeCmOnly   EnvironmentType = 1
+	EnvironmentTypeEhOnly   EnvironmentType = 2
 )
 
-// CreateEnvironment creates a new environment for a project
+// CreateEnvironment creates a new environment for a project using v2 API
 func (c *Client) CreateEnvironment(projectID string, name string, isProd bool, environmentType EnvironmentType) (*Environment, error) {
 
 	tenantType := 0
@@ -46,16 +62,23 @@ func (c *Client) CreateEnvironment(projectID string, name string, isProd bool, e
 		tenantType = 1
 	}
 
+	// Determine the environment type for v2 API
+	// Leave empty for the old combined environments
+	var envType string
+	if environmentType == EnvironmentTypeCmOnly {
+		envType = "cm"
+	}
+	if environmentType == EnvironmentTypeEhOnly {
+		envType = "eh"
+	}
+
 	body := CreateEnvironmentRequest{
 		Name:       name,
 		TenantType: tenantType,
+		Type:       envType,
 	}
 
-	if environmentType == EnvironmentTypeCmOnly {
-		body.Type = "cm"
-	}
-
-	// Create request options
+	// Create request options for v2 API
 	opts := RequestOptions{
 		Method: "POST",
 		Path:   fmt.Sprintf("/api/projects/v2/%s/environments", projectID),
@@ -81,8 +104,9 @@ func (c *Client) CreateEnvironment(projectID string, name string, isProd bool, e
 }
 
 // DeleteEnvironment deletes an existing environment
-func (c *Client) DeleteEnvironment(projectID string, environmentID string) error {
-	// Create request options
+// Note: Using v1 API since v2 API doesn't have a DELETE endpoint for environments
+func (c *Client) DeleteEnvironment(environmentID string) error {
+	// Create request options for v1 API (v2 doesn't support environment deletion)
 	opts := RequestOptions{
 		Method: "DELETE",
 		Path:   fmt.Sprintf("/api/environments/v1/%s", environmentID),
@@ -99,12 +123,12 @@ func (c *Client) DeleteEnvironment(projectID string, environmentID string) error
 	return nil
 }
 
-// GetProjectEnvironments lists environments for a specific project
+// GetProjectEnvironments lists environments for a specific project using v2 API
 func (c *Client) GetProjectEnvironments(projectID string) ([]Environment, error) {
-	// Create request options
+	// Create request options for v2 API
 	opts := RequestOptions{
 		Method: "GET",
-		Path:   fmt.Sprintf("/api/projects/v1/%s/environments", projectID),
+		Path:   fmt.Sprintf("/api/projects/v2/%s/environments", projectID),
 	}
 
 	// Make the request
@@ -145,9 +169,9 @@ func (c *Client) UpdateEnvironment(projectID string, environmentID string, envir
 	return nil
 }
 
-// GetEnvironment gets a specific environment by ID
-func (c *Client) GetEnvironment(projectID string, environmentID string) (*Environment, error) {
-	// Create request options
+// GetEnvironment gets a specific environment by ID using v2 API
+func (c *Client) GetEnvironment(environmentID string) (*Environment, error) {
+	// Create request options for v2 API
 	opts := RequestOptions{
 		Method: "GET",
 		Path:   fmt.Sprintf("/api/environments/v2/%s", environmentID),
@@ -172,7 +196,7 @@ func (c *Client) GetEnvironment(projectID string, environmentID string) (*Enviro
 }
 
 // WaitForEnvironmentReady waits for an environment to be ready
-func (c *Client) WaitForEnvironmentReady(projectID string, environmentID string, timeoutMinutes int) (*Environment, error) {
+func (c *Client) WaitForEnvironmentReady(environmentID string, timeoutMinutes int) (*Environment, error) {
 	// Set timeout
 	timeout := time.Duration(timeoutMinutes) * time.Minute
 	startTime := time.Now()
@@ -187,7 +211,7 @@ func (c *Client) WaitForEnvironmentReady(projectID string, environmentID string,
 		}
 
 		// Get the current environment status
-		environment, err := c.GetEnvironment(projectID, environmentID)
+		environment, err := c.GetEnvironment(environmentID)
 		if err != nil {
 			return nil, fmt.Errorf("failed to get environment status: %v", err)
 		}

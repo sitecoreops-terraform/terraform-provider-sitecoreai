@@ -213,7 +213,7 @@ func (r *environmentResource) Read(ctx context.Context, req resource.ReadRequest
 	}
 
 	// Get environment from API
-	environment, err := r.client.GetEnvironment(state.ProjectID.ValueString(), state.ID.ValueString())
+	environment, err := r.client.GetEnvironment(state.ID.ValueString())
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error reading environment",
@@ -291,7 +291,7 @@ func (r *environmentResource) Update(ctx context.Context, req resource.UpdateReq
 	}
 
 	// Fetch updated environment from API
-	updatedEnvironment, err := r.client.GetEnvironment(plan.ProjectID.ValueString(), plan.ID.ValueString())
+	updatedEnvironment, err := r.client.GetEnvironment(plan.ID.ValueString())
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error reading updated environment",
@@ -334,7 +334,7 @@ func (r *environmentResource) Delete(ctx context.Context, req resource.DeleteReq
 	}
 
 	// Delete the environment
-	err := r.client.DeleteEnvironment(state.ProjectID.ValueString(), state.ID.ValueString())
+	err := r.client.DeleteEnvironment(state.ID.ValueString())
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error deleting environment",

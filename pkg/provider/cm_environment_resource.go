@@ -176,7 +176,6 @@ func (r *cmEnvironmentResource) Create(ctx context.Context, req resource.CreateR
 
 	// Wait for environment to be ready with context IDs (timeout after 30 minutes)
 	readyEnvironment, err := r.client.WaitForEnvironmentReady(
-		plan.ProjectID.ValueString(),
 		createdEnvironment.ID,
 		10, // 10 minutes timeout
 	)
@@ -227,7 +226,7 @@ func (r *cmEnvironmentResource) Read(ctx context.Context, req resource.ReadReque
 	}
 
 	// Get environment from API
-	environment, err := r.client.GetEnvironment(state.ProjectID.ValueString(), state.ID.ValueString())
+	environment, err := r.client.GetEnvironment(state.ID.ValueString())
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error reading CM environment",
@@ -300,7 +299,7 @@ func (r *cmEnvironmentResource) Update(ctx context.Context, req resource.UpdateR
 	}
 
 	// Fetch updated environment from API
-	updatedEnvironment, err := r.client.GetEnvironment(plan.ProjectID.ValueString(), plan.ID.ValueString())
+	updatedEnvironment, err := r.client.GetEnvironment(plan.ID.ValueString())
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error reading updated CM environment",
@@ -343,7 +342,7 @@ func (r *cmEnvironmentResource) Delete(ctx context.Context, req resource.DeleteR
 	}
 
 	// Delete the environment
-	err := r.client.DeleteEnvironment(state.ProjectID.ValueString(), state.ID.ValueString())
+	err := r.client.DeleteEnvironment(state.ID.ValueString())
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error deleting CM environment",
