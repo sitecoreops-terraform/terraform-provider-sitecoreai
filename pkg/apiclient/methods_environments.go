@@ -68,7 +68,7 @@ func (c *Client) CreateEnvironment(projectID string, name string, isProd bool, e
 		return nil, fmt.Errorf("failed to create environment: %v", err)
 	}
 
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	// Parse the response
 	var createdEnvironment Environment
@@ -80,7 +80,98 @@ func (c *Client) CreateEnvironment(projectID string, name string, isProd bool, e
 	return &createdEnvironment, nil
 }
 
-// WaitForEnvironmentReady polls the environment until it's ready and has context IDs
+// DeleteEnvironment deletes an existing environment
+func (c *Client) DeleteEnvironment(projectID string, environmentID string) error {
+	// Create request options
+	opts := RequestOptions{
+		Method: "DELETE",
+		Path:   fmt.Sprintf("/api/environments/v1/%s", environmentID),
+	}
+
+	// Make the request
+	resp, err := c.doRequest(opts)
+	if err != nil {
+		return fmt.Errorf("failed to delete environment: %v", err)
+	}
+
+	defer func() { _ = resp.Body.Close() }()
+
+	return nil
+}
+
+// GetProjectEnvironments lists environments for a specific project
+func (c *Client) GetProjectEnvironments(projectID string) ([]Environment, error) {
+	// Create request options
+	opts := RequestOptions{
+		Method: "GET",
+		Path:   fmt.Sprintf("/api/projects/v1/%s/environments", projectID),
+	}
+
+	// Make the request
+	resp, err := c.doRequest(opts)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get project environments: %v", err)
+	}
+
+	defer func() { _ = resp.Body.Close() }()
+
+	// Parse the response
+	var environments []Environment
+	err = json.NewDecoder(resp.Body).Decode(&environments)
+	if err != nil {
+		return nil, fmt.Errorf("failed to decode project environments: %v", err)
+	}
+
+	return environments, nil
+}
+
+// UpdateEnvironment updates an existing environment
+func (c *Client) UpdateEnvironment(projectID string, environmentID string, environment Environment) error {
+	// Create request options
+	opts := RequestOptions{
+		Method: "PUT",
+		Path:   fmt.Sprintf("/api/environments/v2/%s", environmentID),
+		Body:   environment,
+	}
+
+	// Make the request
+	resp, err := c.doRequest(opts)
+	if err != nil {
+		return fmt.Errorf("failed to update environment: %v", err)
+	}
+
+	defer func() { _ = resp.Body.Close() }()
+
+	return nil
+}
+
+// GetEnvironment gets a specific environment by ID
+func (c *Client) GetEnvironment(projectID string, environmentID string) (*Environment, error) {
+	// Create request options
+	opts := RequestOptions{
+		Method: "GET",
+		Path:   fmt.Sprintf("/api/environments/v2/%s", environmentID),
+	}
+
+	// Make the request
+	resp, err := c.doRequest(opts)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get environment: %v", err)
+	}
+
+	defer func() { _ = resp.Body.Close() }()
+
+	// Parse the response
+	var environment Environment
+	err = json.NewDecoder(resp.Body).Decode(&environment)
+	if err != nil {
+		return nil, fmt.Errorf("failed to decode environment: %v", err)
+	}
+
+	return &environment, nil
+}
+
+// WaitForEnvironmentReady waits for an environment to be ready
 func (c *Client) WaitForEnvironmentReady(projectID string, environmentID string, timeoutMinutes int) (*Environment, error) {
 	// Set timeout
 	timeout := time.Duration(timeoutMinutes) * time.Minute
@@ -109,95 +200,4 @@ func (c *Client) WaitForEnvironmentReady(projectID string, environmentID string,
 		// Wait before polling again
 		time.Sleep(pollInterval)
 	}
-}
-
-// GetEnvironment retrieves details of an existing environment
-func (c *Client) GetEnvironment(projectID string, environmentID string) (*Environment, error) {
-	// Create request options
-	opts := RequestOptions{
-		Method: "GET",
-		Path:   fmt.Sprintf("/api/environments/v2/%s", environmentID),
-	}
-
-	// Make the request
-	resp, err := c.doRequest(opts)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get environment: %v", err)
-	}
-
-	defer resp.Body.Close()
-
-	// Parse the response
-	var environment Environment
-	err = json.NewDecoder(resp.Body).Decode(&environment)
-	if err != nil {
-		return nil, fmt.Errorf("failed to decode environment: %v", err)
-	}
-
-	return &environment, nil
-}
-
-// UpdateEnvironment updates an existing environment
-func (c *Client) UpdateEnvironment(projectID string, environmentID string, environment Environment) error {
-	// Create request options
-	opts := RequestOptions{
-		Method: "PUT",
-		Path:   fmt.Sprintf("/api/environments/v1/%s", environmentID),
-		Body:   environment,
-	}
-
-	// Make the request
-	resp, err := c.doRequest(opts)
-	if err != nil {
-		return fmt.Errorf("failed to update environment: %v", err)
-	}
-
-	defer resp.Body.Close()
-
-	return nil
-}
-
-// DeleteEnvironment deletes an existing environment
-func (c *Client) DeleteEnvironment(projectID string, environmentID string) error {
-	// Create request options
-	opts := RequestOptions{
-		Method: "DELETE",
-		Path:   fmt.Sprintf("/api/environments/v1/%s", environmentID),
-	}
-
-	// Make the request
-	resp, err := c.doRequest(opts)
-	if err != nil {
-		return fmt.Errorf("failed to delete environment: %v", err)
-	}
-
-	defer resp.Body.Close()
-
-	return nil
-}
-
-// GetProjectEnvironments lists environments for a specific project
-func (c *Client) GetProjectEnvironments(projectID string) ([]Environment, error) {
-	// Create request options
-	opts := RequestOptions{
-		Method: "GET",
-		Path:   fmt.Sprintf("/api/projects/v1/%s/environments", projectID),
-	}
-
-	// Make the request
-	resp, err := c.doRequest(opts)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get project environments: %v", err)
-	}
-
-	defer resp.Body.Close()
-
-	// Parse the response
-	var environments []Environment
-	err = json.NewDecoder(resp.Body).Decode(&environments)
-	if err != nil {
-		return nil, fmt.Errorf("failed to decode project environments: %v", err)
-	}
-
-	return environments, nil
 }

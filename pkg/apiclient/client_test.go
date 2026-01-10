@@ -102,9 +102,9 @@ func TestGetProjectAndEnvironments(t *testing.T) {
 	// Verify project details
 	if projectDetails == nil {
 		t.Error("Project details are nil")
+	} else {
+		t.Logf("Project details retrieved successfully: %s (ID: %s)", projectDetails.Name, projectDetails.ID)
 	}
-
-	t.Logf("Project details retrieved successfully: %s (ID: %s)", projectDetails.Name, projectDetails.ID)
 
 	// Test GetProjectEnvironments method
 	environments, err := client.GetProjectEnvironments(project.ID)

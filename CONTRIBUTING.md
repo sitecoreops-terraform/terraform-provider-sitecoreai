@@ -10,6 +10,12 @@ The folder structure:
 * `examples/` with several terraform examples to show how the provider can be used in terraform modules.
 * `docs/` contains the provider documentation in the format required by the Terraform Registry.
 
+## Linting
+
+```bash
+golangci-lint run
+```
+
 ## Testing api client
 
 To run the test, those are integration tests and will make actual calls to the SitecoreAI Deploy API:
