@@ -45,7 +45,7 @@ type sitecoreProviderModel struct {
 
 // Metadata returns the provider type name
 func (p *sitecoreProvider) Metadata(_ context.Context, _ provider.MetadataRequest, resp *provider.MetadataResponse) {
-	resp.TypeName = "sitecore"
+	resp.TypeName = "sitecoreai"
 	resp.Version = p.version
 }
 

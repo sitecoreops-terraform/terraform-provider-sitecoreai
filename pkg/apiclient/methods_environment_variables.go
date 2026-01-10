@@ -19,7 +19,7 @@ func (c *Client) GetEnvironmentVariables(projectID string, environmentID string)
 		return nil, fmt.Errorf("failed to get environment variables: %v", err)
 	}
 
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	// Parse the response
 	var variables map[string]string
@@ -46,7 +46,7 @@ func (c *Client) SetEnvironmentVariable(projectID string, environmentID string, 
 		return fmt.Errorf("failed to set environment variable: %v", err)
 	}
 
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	return nil
 }
@@ -65,7 +65,7 @@ func (c *Client) DeleteEnvironmentVariable(projectID string, environmentID strin
 		return fmt.Errorf("failed to delete environment variable: %v", err)
 	}
 
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	return nil
 }

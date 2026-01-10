@@ -28,7 +28,7 @@ func (c *Client) GetProjects() ([]Project, error) {
 		return nil, fmt.Errorf("failed to get projects: %v", err)
 	}
 
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	// Parse the response
 	var projects []Project
@@ -54,7 +54,7 @@ func (c *Client) GetProject(projectID string) (*Project, error) {
 		return nil, fmt.Errorf("failed to get project: %v", err)
 	}
 
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	// Parse the response
 	var project Project
@@ -81,7 +81,7 @@ func (c *Client) CreateProject(project Project) (*Project, error) {
 		return nil, fmt.Errorf("failed to create project: %v", err)
 	}
 
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	// Parse the response
 	var createdProject Project
@@ -108,7 +108,7 @@ func (c *Client) UpdateProject(projectID string, project Project) error {
 		return fmt.Errorf("failed to update project: %v", err)
 	}
 
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	return nil
 }
@@ -127,7 +127,7 @@ func (c *Client) DeleteProject(projectID string) error {
 		return fmt.Errorf("failed to delete project: %v", err)
 	}
 
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	return nil
 }

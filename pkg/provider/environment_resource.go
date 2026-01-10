@@ -58,7 +58,10 @@ func (r *environmentResource) Metadata(_ context.Context, req resource.MetadataR
 // Schema defines the schema for the resource
 func (r *environmentResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: "Manages a Sitecore environment",
+		Description: `Manages a traditional SitecoreAI combined environment with both authoring and editing. 
+		
+			Be aware of the new separate environments, then use sitecoreai_cm_environment and sitecoreai_eh_environment.
+		`,
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Description: "The ID of the environment",
@@ -83,8 +86,8 @@ func (r *environmentResource) Schema(_ context.Context, _ resource.SchemaRequest
 				Optional:    true,
 			},
 			"tenant_type": schema.StringAttribute{
-				Description: "The tenant type for the environment",
-				Optional:    true,
+				Description: "Indicates if it is production or not, can have the values 'prod' or 'nonprod'",
+				Computed:    true,
 			},
 			"host": schema.StringAttribute{
 				Description: "The host of the environment",
@@ -210,7 +213,7 @@ func (r *environmentResource) Read(ctx context.Context, req resource.ReadRequest
 	}
 
 	// Get environment from API
-	environment, err := r.client.GetEnvironment(state.ProjectID.ValueString(), state.ID.ValueString())
+	environment, err := r.client.GetEnvironment(state.ID.ValueString())
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error reading environment",
@@ -288,7 +291,7 @@ func (r *environmentResource) Update(ctx context.Context, req resource.UpdateReq
 	}
 
 	// Fetch updated environment from API
-	updatedEnvironment, err := r.client.GetEnvironment(plan.ProjectID.ValueString(), plan.ID.ValueString())
+	updatedEnvironment, err := r.client.GetEnvironment(plan.ID.ValueString())
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error reading updated environment",
@@ -331,7 +334,7 @@ func (r *environmentResource) Delete(ctx context.Context, req resource.DeleteReq
 	}
 
 	// Delete the environment
-	err := r.client.DeleteEnvironment(state.ProjectID.ValueString(), state.ID.ValueString())
+	err := r.client.DeleteEnvironment(state.ID.ValueString())
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error deleting environment",

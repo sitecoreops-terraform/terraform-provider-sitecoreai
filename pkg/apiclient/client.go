@@ -107,7 +107,7 @@ func (c *Client) doRequest(opts RequestOptions) (*http.Response, error) {
 	}
 
 	if resp.StatusCode >= 400 {
-		return resp, fmt.Errorf("Failure as status code is %d", resp.StatusCode)
+		return resp, fmt.Errorf("failure as status code is %d", resp.StatusCode)
 	}
 
 	return resp, nil

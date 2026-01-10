@@ -67,6 +67,7 @@ func (r *deployClientResource) Schema(_ context.Context, _ resource.SchemaReques
 			"client_id": schema.StringAttribute{
 				Description: "The client ID for authentication",
 				Computed:    true,
+				Sensitive:   false,
 			},
 			"client_secret": schema.StringAttribute{
 				Description: "The client secret for authentication",

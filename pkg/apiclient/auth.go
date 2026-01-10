@@ -47,7 +47,7 @@ func (c *Client) Authenticate() error {
 		return fmt.Errorf("failed to send request: %v", err)
 	}
 
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	// Parse response
 	if resp.StatusCode != http.StatusOK {

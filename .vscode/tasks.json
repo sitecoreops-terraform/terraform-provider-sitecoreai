@@ -1,0 +1,15 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "go",
+			"label": "build workspace",
+			"command": "build",
+			"problemMatcher": [
+				"$go"
+			],
+			"group": "build",
+			"detail": "cd /workspaces/terraform-provider-sitecoreai; go build"
+		}
+	]
+}

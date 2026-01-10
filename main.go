@@ -16,7 +16,7 @@ func main() {
 	flag.Parse()
 
 	opts := providerserver.ServeOpts{
-		Address: "registry.terraform.io/sitecoreops/terraform-provider-sitecoreai",
+		Address: "registry.terraform.io/sitecoreops/sitecoreai",
 		Debug:   debugMode,
 	}
 

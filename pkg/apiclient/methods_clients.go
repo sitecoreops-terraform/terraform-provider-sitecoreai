@@ -66,7 +66,7 @@ func (c *Client) CreateCMClient(projectID string, environmentID string, name str
 		return nil, fmt.Errorf("failed to create CM client: %v", err)
 	}
 
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	// Parse the response
 	var clientResponse ClientCreateResponse
@@ -100,7 +100,7 @@ func (c *Client) CreateEdgeClient(projectID string, environmentID string, name s
 		return nil, fmt.Errorf("failed to create Edge client: %v", err)
 	}
 
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	// Parse the response
 	var clientResponse ClientCreateResponse
@@ -132,7 +132,7 @@ func (c *Client) CreateDeployClient(name string, description string) (*ClientCre
 		return nil, fmt.Errorf("failed to create Deploy client: %v", err)
 	}
 
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	// Parse the response
 	var clientResponse ClientCreateResponse
@@ -166,7 +166,7 @@ func (c *Client) CreateEditingHostBuildClient(projectID string, environmentID st
 		return nil, fmt.Errorf("failed to create Editing Host Build client: %v", err)
 	}
 
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	// Parse the response
 	var clientResponse ClientCreateResponse
@@ -192,7 +192,7 @@ func (c *Client) DeleteClient(clientID string) error {
 		return fmt.Errorf("failed to delete client: %v", err)
 	}
 
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	return nil
 }

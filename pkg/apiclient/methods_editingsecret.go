@@ -25,7 +25,7 @@ func (c *Client) ObtainEditingSecret(environmentID string) (string, error) {
 		return "", fmt.Errorf("failed to obtain editing secret: %v", err)
 	}
 
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	// If JSON decoding fails, try to read as plain text (new API format)
 	// Read the response body as plain text
