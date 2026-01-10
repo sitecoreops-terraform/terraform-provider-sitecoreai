@@ -27,5 +27,5 @@ variable "environment_name" {
 variable "environment_is_prod" {
   description = "Environment is using production SLA"
   type        = bool
-  default     = true
+  default     = false
 }
