@@ -79,6 +79,37 @@ func (c *Client) CreateEnvironment(projectID string, name string, isProd bool, e
 	return &createdEnvironment, nil
 }
 
+// WaitForEnvironmentReady polls the environment until it's ready and has context IDs
+func (c *Client) WaitForEnvironmentReady(projectID string, environmentID string, timeoutMinutes int) (*Environment, error) {
+	// Set timeout
+	timeout := time.Duration(timeoutMinutes) * time.Minute
+	startTime := time.Now()
+
+	// Polling interval
+	pollInterval := 1 * time.Second
+
+	for {
+		// Check if we've exceeded the timeout
+		if time.Since(startTime) > timeout {
+			return nil, fmt.Errorf("timed out waiting for environment to be ready after %d minutes", timeoutMinutes)
+		}
+
+		// Get the current environment status
+		environment, err := c.GetEnvironment(projectID, environmentID)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get environment status: %v", err)
+		}
+
+		// Check if environment has the required context IDs
+		if environment.PreviewContextId != "" && environment.LiveContextId != "" {
+			return environment, nil
+		}
+
+		// Wait before polling again
+		time.Sleep(pollInterval)
+	}
+}
+
 // GetEnvironment retrieves details of an existing environment
 func (c *Client) GetEnvironment(projectID string, environmentID string) (*Environment, error) {
 	// Create request options

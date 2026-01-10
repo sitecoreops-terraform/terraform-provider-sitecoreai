@@ -174,6 +174,23 @@ func (r *cmEnvironmentResource) Create(ctx context.Context, req resource.CreateR
 		return
 	}
 
+	// Wait for environment to be ready with context IDs (timeout after 30 minutes)
+	readyEnvironment, err := r.client.WaitForEnvironmentReady(
+		plan.ProjectID.ValueString(),
+		createdEnvironment.ID,
+		10, // 10 minutes timeout
+	)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Error waiting for CM environment to be ready",
+			"Could not wait for CM environment to be ready: "+err.Error(),
+		)
+		return
+	}
+
+	// Use the ready environment instead of the initially created one
+	createdEnvironment = readyEnvironment
+
 	// Map response body to schema and populate Computed attribute values
 	plan.ID = types.StringValue(createdEnvironment.ID)
 	plan.Name = types.StringValue(createdEnvironment.Name)
