@@ -5,6 +5,8 @@ import (
 	"testing"
 )
 
+const testEnvironmentName = "inttestenv"
+
 func TestCreateEnvironment(t *testing.T) {
 	// Get client credentials from environment variables
 	clientID := os.Getenv("SITECORE_CLIENT_ID")
@@ -38,7 +40,7 @@ func TestCreateEnvironment(t *testing.T) {
 	t.Logf("Testing with project: %s (ID: %s)", project.Name, project.ID)
 
 	// Create environment
-	env, err := client.CreateEnvironment(project.ID, "inttestenv", true, EnvironmentTypeCmOnly)
+	env, err := client.CreateEnvironment(project.ID, testEnvironmentName, true, EnvironmentTypeCmOnly)
 	if err != nil {
 		t.Errorf("CreateEnvironment failed: %v", err)
 	}
@@ -92,14 +94,14 @@ func TestDeleteEnvironment(t *testing.T) {
 	// Find the environment with the matching name
 	var foundEnvironment *Environment
 	for i := range environments {
-		if environments[i].Name == "inittestenv" {
+		if environments[i].Name == testEnvironmentName {
 			foundEnvironment = &environments[i]
 			break
 		}
 	}
 
 	if foundEnvironment == nil {
-		t.Skip("No environments named 'inittestenv' found to test delete-environment")
+		t.Skipf("No environments named '%s' found to test delete-environment", testEnvironmentName)
 	}
 
 	// Delete environment

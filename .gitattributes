@@ -1,0 +1,4 @@
+*.go    text eol=lf
+*.tf    text eol=lf
+*.json  text eol=lf
+*.tfrc  text eol=lf

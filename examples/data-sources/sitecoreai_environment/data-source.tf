@@ -4,7 +4,7 @@ data "sitecoreai_project" "existing" {
 
 # Use the environment data source to get information about an environment
 data "sitecoreai_environment" "existing" {
-  project_id = data.sitecoreai_project.id
+  project_id = data.sitecoreai_project.existing.id
   name       = "production" # Replace with existing environment name
 }
 

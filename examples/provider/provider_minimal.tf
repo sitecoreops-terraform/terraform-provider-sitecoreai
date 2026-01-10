@@ -1,6 +1,6 @@
 terraform {
   required_providers {
-    sitecore = {
+    sitecoreai = {
       source = "sitecoreops/sitecoreai"
     }
   }
@@ -8,7 +8,7 @@ terraform {
 }
 
 # Configure the Sitecore AI provider
-provider "sitecore" {
+provider "sitecoreai" {
   # Specify client credentials in environment variables
   # export SITECORE_CLIENT_ID="your-client-id"
   # export SITECORE_CLIENT_SECRET="your-client-secret"

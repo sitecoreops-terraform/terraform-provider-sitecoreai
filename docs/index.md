@@ -14,7 +14,7 @@ Interact with Sitecore AI
 ```terraform
 terraform {
   required_providers {
-    sitecore = {
+    sitecoreai = {
       source = "sitecoreops/sitecoreai"
     }
   }
@@ -22,7 +22,7 @@ terraform {
 }
 
 # Configure the Sitecore AI provider
-provider "sitecore" {
+provider "sitecoreai" {
   # Specify client credentials in environment variables
   # export SITECORE_CLIENT_ID="your-client-id"
   # export SITECORE_CLIENT_SECRET="your-client-secret"
@@ -32,7 +32,7 @@ provider "sitecore" {
 ```terraform
 terraform {
   required_providers {
-    sitecore = {
+    sitecoreai = {
       source = "sitecoreops/sitecoreai"
     }
   }
@@ -40,7 +40,7 @@ terraform {
 }
 
 # Configure the Sitecore AI provider
-provider "sitecore" {
+provider "sitecoreai" {
   client_id     = var.sitecore_client_id
   client_secret = var.sitecore_client_secret
 }
