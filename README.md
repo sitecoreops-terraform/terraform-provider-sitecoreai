@@ -9,7 +9,7 @@ The main focus is on establishing projects and environments by using the Sitecor
 To use the api you will need credentials, see [how to create Organization automation client in SitecoreAI](https://doc.sitecore.com/sai/en/developers/sitecoreai/manage-client-credentials-for-a-sitecoreai-organization-or-environment.html#create-an-automation-client-for-a-sitecoreai-organization)
 
 
-## Knwon issues
+## Known issues
 
 Deleting automation clients is not working. There is an active Sitecore Support issue CS0655576
 

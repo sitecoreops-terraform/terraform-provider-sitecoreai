@@ -1,12 +1,10 @@
 terraform {
   required_providers {
-    sitecore = {
+    sitecoreai = {
       source = "sitecoreops/sitecoreai"
     }
   }
 }
 
-provider "sitecore" {
-  client_id     = var.sitecore_client_id
-  client_secret = var.sitecore_client_secret
+provider "sitecoreai" {
 }

@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"strings"
 )
 
 type Client struct {
@@ -17,48 +18,97 @@ type Client struct {
 	AuthURL      string
 	ClientID     string
 	ClientSecret string
+	CliConfig    *CLIUserConfig
 	Token        string
 	HTTPClient   *http.Client
 }
 
-func NewClient(clientID string, clientSecret string) *Client {
-	return NewClientWithProxy(clientID, clientSecret, "")
-}
+// NewClientFromCLI attempts to create a client using CLI authentication
+func NewClientFromCLI(configPath string) (*Client, error) {
 
-func NewClientFromEnv() *Client {
-	clientID := os.Getenv("SITECORE_CLIENT_ID")
-	clientSecret := os.Getenv("SITECORE_CLIENT_SECRET")
-
-	proxy := os.Getenv("HTTPS_PROXY")
-
-	return NewClientWithProxy(clientID, clientSecret, proxy)
-}
-
-func NewClientWithProxy(clientID string, clientSecret string, proxyURL string) *Client {
-	client := &http.Client{}
-	if proxyURL != "" {
-		proxy, err := url.Parse(proxyURL)
+	if configPath == "" {
+		foundConfigPath, err := findCLIUserConfigPath()
 		if err != nil {
-			log.Printf("Invalid proxy URL: %v", err)
-			return &Client{
-				BaseURL:      "https://xmclouddeploy-api.sitecorecloud.io",
-				AuthURL:      "https://auth.sitecorecloud.io/oauth/token",
-				ClientID:     clientID,
-				ClientSecret: clientSecret,
-				HTTPClient:   client,
-			}
+			return nil, fmt.Errorf("failed to get config path: %v", err)
 		}
-		client.Transport = &http.Transport{
-			Proxy:           http.ProxyURL(proxy),
-			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+
+		configPath = foundConfigPath
+	}
+
+	return NewClientWithAllConfig("", "", "", "", configPath, &http.Client{})
+}
+
+func NewClientFromEnv() (*Client, error) {
+	clientID := os.Getenv("SITECOREAI_CLIENT_ID")
+	clientSecret := os.Getenv("SITECOREAI_CLIENT_SECRET")
+
+	return NewClientWithAllConfig("", "", clientID, clientSecret, "", &http.Client{})
+}
+
+func NewClient(clientID string, clientSecret string) (*Client, error) {
+	return NewClientWithAllConfig("", "", clientID, clientSecret, "", &http.Client{})
+}
+
+func NewClientWithAllConfig(baseUrl string, authUrl string, clientId string, clientSecret string, cliUserConfigPath string, httpClient *http.Client) (*Client, error) {
+
+	BaseURL := "https://xmclouddeploy-api.sitecorecloud.io"
+	AuthURL := "https://auth.sitecorecloud.io"
+
+	if len(baseUrl) > 0 {
+		BaseURL = baseUrl
+	}
+
+	if len(authUrl) > 0 {
+		AuthURL = authUrl
+	}
+
+	var cliConfig *CLIUserConfig
+
+	if cliUserConfigPath != "" {
+		cfg, err := readCLIUserConfig(cliUserConfigPath)
+		if cfg == nil || err != nil {
+			return nil, fmt.Errorf("failed to read specified cli config from %s: %v", cliUserConfigPath, err)
+		}
+
+		cliConfig = cfg
+
+		// If urls are not explicitly overriden, then use values from config
+		if len(baseUrl) == 0 {
+			BaseURL = cliConfig.Endpoints.XMCloud.Host
+		}
+
+		if len(authUrl) == 0 {
+			AuthURL = cliConfig.Endpoints.XMCloud.Authority
 		}
 	}
+
+	if cliConfig == nil && (len(clientId) == 0 || len(clientSecret) == 0) {
+		return nil, fmt.Errorf("client_id and client_secret must be provided")
+	}
+
+	setupProxy(httpClient)
 	return &Client{
-		BaseURL:      "https://xmclouddeploy-api.sitecorecloud.io",
-		AuthURL:      "https://auth.sitecorecloud.io/oauth/token",
-		ClientID:     clientID,
+		BaseURL:      strings.TrimSuffix(BaseURL, "/"),
+		AuthURL:      strings.TrimSuffix(AuthURL, "/"),
+		ClientID:     clientId,
 		ClientSecret: clientSecret,
-		HTTPClient:   client,
+		CliConfig:    cliConfig,
+		HTTPClient:   httpClient,
+	}, nil
+}
+
+func setupProxy(client *http.Client) {
+	proxy := os.Getenv("HTTPS_PROXY")
+
+	if proxy != "" {
+		proxyURL, err := url.Parse(proxy)
+		if err != nil {
+			log.Printf("Invalid proxy URL: %v", err)
+		}
+		client.Transport = &http.Transport{
+			Proxy:           http.ProxyURL(proxyURL),
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		}
 	}
 }
 

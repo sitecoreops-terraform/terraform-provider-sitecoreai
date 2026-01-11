@@ -41,6 +41,7 @@ type sitecoreProvider struct {
 type sitecoreProviderModel struct {
 	ClientID     types.String `tfsdk:"client_id"`
 	ClientSecret types.String `tfsdk:"client_secret"`
+	UseCLI       types.Bool   `tfsdk:"use_cli"`
 }
 
 // Metadata returns the provider type name
@@ -63,6 +64,10 @@ func (p *sitecoreProvider) Schema(_ context.Context, _ provider.SchemaRequest, r
 				Optional:    true,
 				Sensitive:   true,
 			},
+			"use_cli": schema.BoolAttribute{
+				Description: "Use Sitecore CLI authentication (searches for .sitecore/user.json)",
+				Optional:    true,
+			},
 		},
 	}
 }
@@ -77,19 +82,19 @@ func (p *sitecoreProvider) Configure(ctx context.Context, req provider.Configure
 		return
 	}
 
-	// If practitioner provided a configuration value for any of the
-	// attributes, it must be a known value
-	if config.ClientID.IsUnknown() || config.ClientSecret.IsUnknown() {
-		resp.Diagnostics.AddError(
-			"Unknown Sitecore API Configuration",
-			"Cannot use unknown values for Sitecore API client_id or client_secret",
-		)
-		return
+	var client *apiclient.Client
+	var err error
+
+	// Handle environment variables
+	// Check if CLI authentication is requested
+	useCLI := os.Getenv("SITECOREAI_USE_CLI") == "1"
+	if !config.UseCLI.IsNull() {
+		useCLI = config.UseCLI.ValueBool()
 	}
 
-	clientID := os.Getenv("SITECORE_CLIENT_ID")
-	clientSecret := os.Getenv("SITECORE_CLIENT_SECRET")
-	proxy := os.Getenv("HTTPS_PROXY")
+	// Use traditional client_id/client_secret authentication
+	clientID := os.Getenv("SITECOREAI_CLIENT_ID")
+	clientSecret := os.Getenv("SITECOREAI_CLIENT_SECRET")
 
 	// Override with configuration values if provided
 	if !config.ClientID.IsNull() && len(config.ClientID.ValueString()) > 0 {
@@ -99,20 +104,40 @@ func (p *sitecoreProvider) Configure(ctx context.Context, req provider.Configure
 		clientSecret = config.ClientSecret.ValueString()
 	}
 
-	// Validate required configuration
-	if clientID == "" || clientSecret == "" {
+	// If practitioner provided a configuration value for any of the
+	// attributes, it must be a known value
+	if config.ClientID.IsUnknown() || config.ClientSecret.IsUnknown() || config.UseCLI.IsUnknown() {
 		resp.Diagnostics.AddError(
-			"Missing Sitecore API Configuration",
-			"client_id and client_secret must be provided or set as environment variables",
+			"Unknown Sitecore API Configuration",
+			"Cannot use unknown values for Sitecore API configuration",
 		)
 		return
 	}
 
-	// Create a new Sitecore API client
-	client := apiclient.NewClientWithProxy(clientID, clientSecret, proxy)
+	if useCLI {
+		// Try CLI authentication
+		client, err = apiclient.NewClientFromCLI("")
+		if err != nil {
+			resp.Diagnostics.AddError(
+				"Sitecore CLI Authentication Failed",
+				"Unable to authenticate using Sitecore CLI: "+err.Error(),
+			)
+			return
+		}
+	} else {
+		// Create a new Sitecore API client
+		client, err = apiclient.NewClient(clientID, clientSecret)
+		if err != nil {
+			resp.Diagnostics.AddError(
+				"SitecoreAI API Authentication Failed",
+				"Unable to authenticate using Client Id and Client Secret: "+err.Error(),
+			)
+			return
+		}
+	}
 
 	// Authenticate the client
-	err := client.Authenticate()
+	err = client.Authenticate()
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Sitecore API Client Authentication Failed",

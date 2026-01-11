@@ -77,10 +77,16 @@ terraform.rc
 # Uncomment the line below if you want to ignore planout files.
 # planout
 
-## Certificates
+## Certificates for proxy or similar    
 *.pem
 
 ## Result
 terraform-provider-sitecoreai
 examples/resources/**/provider*.tf
 examples/data-sources/**/provider*.tf
+
+## dotnet tool Sitecore CLI, we ignore everything
+nuget.config
+dotnet-tools.json
+sitecore.json
+.sitecore/

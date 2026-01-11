@@ -3,13 +3,35 @@
 	"tasks": [
 		{
 			"type": "go",
-			"label": "build workspace",
+			"label": "build provider",
 			"command": "build",
 			"problemMatcher": [
 				"$go"
 			],
 			"group": "build",
 			"detail": "cd /workspaces/terraform-provider-sitecoreai; go build"
+		},
+		{
+			"type": "go",
+			"label": "generate docs",
+			"command": "generate",
+			"problemMatcher": [
+				"$go"
+			],			
+			"detail": "cd /workspaces/terraform-provider-sitecoreai/tools; go generate",
+			"options": {
+				"cwd": "${workspaceFolder}/tools"
+			}
+		},
+		{
+			"type": "shell",
+			"label": "lint workspace (go)",
+			"command": "golangci-lint",
+			"args": [
+				"run",
+				"--fix"
+			],
+			"problemMatcher":"$go"
 		}
 	]
 }

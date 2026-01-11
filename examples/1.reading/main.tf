@@ -1,12 +1,12 @@
-data "sitecore_project" "main" {
+data "sitecoreai_project" "main" {
   name = var.project_name
 }
 
-data "sitecore_environment" "main" {
-  project_id = data.sitecore_project.main.id
+data "sitecoreai_environment" "main" {
+  project_id = data.sitecoreai_project.main.id
   name       = var.environment_name
 }
 
-data "sitecore_editing_secret" "main" {
-  environment_id = data.sitecore_environment.main.id
+data "sitecoreai_editing_secret" "main" {
+  environment_id = data.sitecoreai_environment.main.id
 }

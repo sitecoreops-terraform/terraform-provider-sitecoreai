@@ -7,17 +7,20 @@ import (
 
 func TestClientAuthentication(t *testing.T) {
 	// Get client credentials from environment variables
-	clientID := os.Getenv("SITECORE_CLIENT_ID")
-	clientSecret := os.Getenv("SITECORE_CLIENT_SECRET")
+	clientID := os.Getenv("SITECOREAI_CLIENT_ID")
+	clientSecret := os.Getenv("SITECOREAI_CLIENT_SECRET")
 	if clientID == "" || clientSecret == "" {
-		t.Skip("SITECORE_CLIENT_ID and SITECORE_CLIENT_SECRET environment variables must be set to run this test")
+		t.Skip("SITECOREAI_CLIENT_ID and SITECOREAI_CLIENT_SECRET environment variables must be set to run this test")
 	}
 
 	// Create new client
-	client := NewClientFromEnv()
+	client, err := NewClientFromEnv()
+	if err != nil {
+		t.Errorf("Client instatiation failed: %v", err)
+	}
 
 	// Test authentication
-	err := client.Authenticate()
+	err = client.Authenticate()
 	if err != nil {
 		t.Errorf("Authentication failed: %v", err)
 	}
@@ -32,17 +35,20 @@ func TestClientAuthentication(t *testing.T) {
 
 func TestGetProjects(t *testing.T) {
 	// Get client credentials from environment variables
-	clientID := os.Getenv("SITECORE_CLIENT_ID")
-	clientSecret := os.Getenv("SITECORE_CLIENT_SECRET")
+	clientID := os.Getenv("SITECOREAI_CLIENT_ID")
+	clientSecret := os.Getenv("SITECOREAI_CLIENT_SECRET")
 	if clientID == "" || clientSecret == "" {
-		t.Skip("SITECORE_CLIENT_ID and SITECORE_CLIENT_SECRET environment variables must be set to run this test")
+		t.Skip("SITECOREAI_CLIENT_ID and SITECOREAI_CLIENT_SECRET environment variables must be set to run this test")
 	}
 
 	// Create new client
-	client := NewClientFromEnv()
+	client, err := NewClientFromEnv()
+	if err != nil {
+		t.Errorf("Client instatiation failed: %v", err)
+	}
 
 	// Authenticate
-	err := client.Authenticate()
+	err = client.Authenticate()
 	if err != nil {
 		t.Fatalf("Authentication failed: %v", err)
 	}
@@ -63,17 +69,20 @@ func TestGetProjects(t *testing.T) {
 
 func TestGetProjectAndEnvironments(t *testing.T) {
 	// Get client credentials from environment variables
-	clientID := os.Getenv("SITECORE_CLIENT_ID")
-	clientSecret := os.Getenv("SITECORE_CLIENT_SECRET")
+	clientID := os.Getenv("SITECOREAI_CLIENT_ID")
+	clientSecret := os.Getenv("SITECOREAI_CLIENT_SECRET")
 	if clientID == "" || clientSecret == "" {
-		t.Skip("SITECORE_CLIENT_ID and SITECORE_CLIENT_SECRET environment variables must be set to run this test")
+		t.Skip("SITECOREAI_CLIENT_ID and SITECOREAI_CLIENT_SECRET environment variables must be set to run this test")
 	}
 
 	// Create new client
-	client := NewClientFromEnv()
+	client, err := NewClientFromEnv()
+	if err != nil {
+		t.Errorf("Client instatiation failed: %v", err)
+	}
 
 	// Authenticate
-	err := client.Authenticate()
+	err = client.Authenticate()
 	if err != nil {
 		t.Fatalf("Authentication failed: %v", err)
 	}
