@@ -6,6 +6,34 @@ import (
 	"testing"
 )
 
+func TestClientAuthentication(t *testing.T) {
+	// Get client credentials from environment variables
+	clientID := os.Getenv("SITECOREAI_CLIENT_ID")
+	clientSecret := os.Getenv("SITECOREAI_CLIENT_SECRET")
+	if clientID == "" || clientSecret == "" {
+		t.Skip("SITECOREAI_CLIENT_ID and SITECOREAI_CLIENT_SECRET environment variables must be set to run this test")
+	}
+
+	// Create new client
+	client, err := NewClientFromEnv()
+	if err != nil {
+		t.Errorf("Client instatiation failed: %v", err)
+	}
+
+	// Test authentication
+	err = client.Authenticate()
+	if err != nil {
+		t.Errorf("Authentication failed: %v", err)
+	}
+
+	// Verify token is not empty
+	if client.Token == "" {
+		t.Error("Authentication token is empty")
+	}
+
+	t.Logf("Authentication test passed successfully: %s", client.Token)
+}
+
 func TestFindCLIUserConfig(t *testing.T) {
 	// Create a temporary directory structure
 	tmpDir := t.TempDir()
