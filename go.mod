@@ -1,4 +1,4 @@
-module github.com/sitecoreops/terraform-provider-sitecoreai
+module github.com/sitecoreops-terraform/terraform-provider-sitecoreai
 
 go 1.24.0
 

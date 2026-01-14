@@ -15,7 +15,7 @@ Interact with Sitecore AI
 terraform {
   required_providers {
     sitecoreai = {
-      source = "sitecoreops/sitecoreai"
+      source = "sitecoreops-terraform/sitecoreai"
     }
   }
   required_version = ">= 1.0.0"
@@ -33,7 +33,7 @@ provider "sitecoreai" {
 terraform {
   required_providers {
     sitecoreai = {
-      source = "sitecoreops/sitecoreai"
+      source = "sitecoreops-terraform/sitecoreai"
     }
   }
   required_version = ">= 1.0.0"
@@ -53,7 +53,7 @@ provider "sitecoreai" {
 terraform {
   required_providers {
     sitecoreai = {
-      source = "sitecoreops/sitecoreai"
+      source = "sitecoreops-terraform/sitecoreai"
     }
   }
   required_version = ">= 1.0.0"
