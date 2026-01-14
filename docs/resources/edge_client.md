@@ -13,6 +13,11 @@ Manages a Sitecore Edge automation client
 ## Example Usage
 
 ```terraform
+# We need proper permissions to create clients, this usually involves CLI authentication
+provider "sitecoreai" {
+  use_cli = true
+}
+
 # Use the project data source to get information about a project by name
 data "sitecoreai_project" "default" {
   name = "XMC" # Replace with an existing project name

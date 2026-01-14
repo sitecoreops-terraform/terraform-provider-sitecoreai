@@ -105,6 +105,7 @@ func setupProxy(client *http.Client) {
 		if err != nil {
 			log.Printf("Invalid proxy URL: %v", err)
 		}
+		log.Printf("Using insecure proxy for %s", proxy)
 		client.Transport = &http.Transport{
 			Proxy:           http.ProxyURL(proxyURL),
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},

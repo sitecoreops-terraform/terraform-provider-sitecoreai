@@ -266,3 +266,145 @@ func TestDeleteClient(t *testing.T) {
 		t.Fatalf("DeleteClient failed: %v", err)
 	}
 }
+
+func TestGetClientsForOrganization(t *testing.T) {
+	// Create a test server
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != "GET" {
+			t.Errorf("Expected GET request, got %s", r.Method)
+		}
+		if r.URL.Path != "/api/clients/v1/organization" {
+			t.Errorf("Expected request to /api/clients/v1/organization, got %s", r.URL.Path)
+		}
+
+		// Return a mock response
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte(`{
+			"items": [
+				{
+					"id": "org-client-1",
+					"name": "Organization Client 1",
+					"description": "Test Organization Client 1",
+					"clientId": "org-client-id-1",
+					"createdAt": "2023-01-01T00:00:00Z",
+					"clientType": 3
+				},
+				{
+					"id": "org-client-2",
+					"name": "Organization Client 2",
+					"description": "Test Organization Client 2",
+					"clientId": "org-client-id-2",
+					"createdAt": "2023-01-02T00:00:00Z",
+					"clientType": 3
+				}
+			]
+		}`))
+	}))
+	defer server.Close()
+
+	// Create a client
+	client := &Client{
+		BaseURL:    server.URL,
+		AuthURL:    "https://auth.sitecorecloud.io/oauth/token",
+		ClientID:   "test-client-id",
+		Token:      "test-token",
+		HTTPClient: server.Client(),
+	}
+
+	// Test the method by calling doRequest directly with a mock token
+	// Create a mock JWT token that will pass validation
+	client.Token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NjgwNTMxOTAsImlhdCI6MTc2ODA0OTU5MCwibmFtZSI6IkpvaG4gRG9lIiwic3ViIjoiMTIzNDU2Nzg5MCJ9.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+
+	// Test the method
+	response, err := client.GetClientsForOrganization()
+	if err != nil {
+		t.Fatalf("GetClientsForOrganization failed: %v", err)
+	}
+
+	// Verify the response
+	if len(response.Items) != 2 {
+		t.Fatalf("Expected 2 clients, got %d", len(response.Items))
+	}
+
+	if response.Items[0].Name != "Organization Client 1" {
+		t.Errorf("Expected name 'Organization Client 1', got '%s'", response.Items[0].Name)
+	}
+
+	if response.Items[1].ClientID != "org-client-id-2" {
+		t.Errorf("Expected client ID 'org-client-id-2', got '%s'", response.Items[1].ClientID)
+	}
+}
+
+func TestGetClientsForEnvironment(t *testing.T) {
+	// Create a test server
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != "GET" {
+			t.Errorf("Expected GET request, got %s", r.Method)
+		}
+		if r.URL.Path != "/api/clients/v1/environment" {
+			t.Errorf("Expected request to /api/clients/v1/environment, got %s", r.URL.Path)
+		}
+
+		// Return a mock response
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte(`{
+			"items": [
+				{
+					"id": "env-client-1",
+					"name": "Environment Client 1",
+					"description": "Test Environment Client 1",
+					"clientId": "env-client-id-1",
+					"createdAt": "2023-01-01T00:00:00Z",
+					"clientType": 1,
+					"projectName": "Test Project",
+					"environmentName": "Test Environment"
+				},
+				{
+					"id": "env-client-2",
+					"name": "Environment Client 2",
+					"description": "Test Environment Client 2",
+					"clientId": "env-client-id-2",
+					"createdAt": "2023-01-02T00:00:00Z",
+					"clientType": 2,
+					"projectName": "Test Project",
+					"environmentName": "Test Environment"
+				}
+			]
+		}`))
+	}))
+	defer server.Close()
+
+	// Create a client
+	client := &Client{
+		BaseURL:    server.URL,
+		AuthURL:    "https://auth.sitecorecloud.io/oauth/token",
+		ClientID:   "test-client-id",
+		Token:      "test-token",
+		HTTPClient: server.Client(),
+	}
+
+	// Test the method by calling doRequest directly with a mock token
+	// Create a mock JWT token that will pass validation
+	client.Token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NjgwNTMxOTAsImlhdCI6MTc2ODA0OTU5MCwibmFtZSI6IkpvaG4gRG9lIiwic3ViIjoiMTIzNDU2Nzg5MCJ9.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+
+	// Test the method
+	response, err := client.GetClientsForEnvironment()
+	if err != nil {
+		t.Fatalf("GetClientsForEnvironment failed: %v", err)
+	}
+
+	// Verify the response
+	if len(response.Items) != 2 {
+		t.Fatalf("Expected 2 clients, got %d", len(response.Items))
+	}
+
+	if response.Items[0].Name != "Environment Client 1" {
+		t.Errorf("Expected name 'Environment Client 1', got '%s'", response.Items[0].Name)
+	}
+
+	if response.Items[1].ClientType != ClientTypeEdge {
+		t.Errorf("Expected client type 'Edge', got raw value '%d'", response.Items[1].ClientType)
+	}
+}

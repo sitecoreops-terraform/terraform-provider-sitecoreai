@@ -61,10 +61,16 @@ func (r *cmClientResource) Schema(_ context.Context, _ resource.SchemaRequest, r
 			"name": schema.StringAttribute{
 				Description: "The name of the CM client",
 				Required:    true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.RequiresReplace(),
+				},
 			},
 			"description": schema.StringAttribute{
 				Description: "The description of the CM client",
 				Optional:    true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.RequiresReplace(),
+				},
 			},
 			"project_id": schema.StringAttribute{
 				Description: "The project ID for the CM client",
@@ -122,9 +128,40 @@ func (r *cmClientResource) Create(ctx context.Context, req resource.CreateReques
 		return
 	}
 
+	// We need to get all environment clients to find the newly created client and get its ID
+	// as it is not returned from api and is needed for future calls.
+	// Feature request XS-11108 to include id in api response
+	clientsResponse, err := r.client.GetClientsForEnvironment()
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Error retrieving environment clients",
+			"Could not retrieve environment clients to find newly created client: "+err.Error(),
+		)
+		return
+	}
+
+	// Find the newly created client by matching client IDs
+	var clientID string
+	var resourceID string
+	for _, client := range clientsResponse.Items {
+		if client.ClientID == clientResponse.ClientID {
+			clientID = client.ClientID
+			resourceID = client.ID
+			break
+		}
+	}
+
+	if resourceID == "" {
+		resp.Diagnostics.AddError(
+			"Error finding created client",
+			"Could not find the newly created client in the environment clients list",
+		)
+		return
+	}
+
 	// Map response body to schema and populate Computed attribute values
-	plan.ID = types.StringValue(clientResponse.ClientID) // Using client ID as the resource ID
-	plan.ClientID = types.StringValue(clientResponse.ClientID)
+	plan.ID = types.StringValue(resourceID) // Using the resource ID from GetClientsForEnvironment
+	plan.ClientID = types.StringValue(clientID)
 	plan.ClientSecret = types.StringValue(clientResponse.ClientSecret)
 
 	// Set state to fully populated data
@@ -145,9 +182,42 @@ func (r *cmClientResource) Read(ctx context.Context, req resource.ReadRequest, r
 		return
 	}
 
-	// For CM clients, we can't currently retrieve the full client details from the API
-	// So we'll just return the current state as-is
-	// In a real implementation, you would call an API endpoint to get the client details
+	// Get all environment clients to find the client by its resource ID
+	clientsResponse, err := r.client.GetClientsForEnvironment()
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Error retrieving environment clients",
+			"Could not retrieve environment clients: "+err.Error(),
+		)
+		return
+	}
+
+	// Find the client by matching resource IDs
+	var foundClient *apiclient.ClientDto
+	for _, client := range clientsResponse.Items {
+		if client.ID == state.ID.ValueString() {
+			foundClient = &client
+			break
+		}
+	}
+
+	if foundClient == nil {
+		resp.Diagnostics.AddError(
+			"Client not found",
+			"Could not find CM client with ID: "+state.ID.ValueString(),
+		)
+		return
+	}
+
+	// Update state with current values from API
+	state.ID = types.StringValue(foundClient.ID)
+	state.Name = types.StringValue(foundClient.Name)
+	if foundClient.Description != "" {
+		state.Description = types.StringValue(foundClient.Description)
+	}
+	state.ClientID = types.StringValue(foundClient.ClientID)
+
+	// Note: We can't retrieve the client secret after creation, so we keep the existing value
 
 	// Set refreshed state
 	diags = resp.State.Set(ctx, &state)
@@ -170,7 +240,7 @@ func (r *cmClientResource) Update(ctx context.Context, req resource.UpdateReques
 	// For CM clients, we need to delete the old client and create a new one
 	// since the API doesn't support updating clients
 
-	// First, delete the old client
+	// Delete the old client
 	err := r.client.DeleteClient(plan.ID.ValueString())
 	if err != nil {
 		resp.Diagnostics.AddError(
@@ -195,8 +265,35 @@ func (r *cmClientResource) Update(ctx context.Context, req resource.UpdateReques
 		return
 	}
 
+	// Get the new resource ID from GetClientsForEnvironment
+	newClientsResponse, err := r.client.GetClientsForEnvironment()
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Error retrieving environment clients",
+			"Could not retrieve environment clients to find newly created client: "+err.Error(),
+		)
+		return
+	}
+
+	// Find the newly created client by matching client IDs
+	var newResourceID string
+	for _, client := range newClientsResponse.Items {
+		if client.ClientID == clientResponse.ClientID {
+			newResourceID = client.ID
+			break
+		}
+	}
+
+	if newResourceID == "" {
+		resp.Diagnostics.AddError(
+			"Error finding created client",
+			"Could not find the newly created client in the environment clients list",
+		)
+		return
+	}
+
 	// Update state with new values
-	plan.ID = types.StringValue(clientResponse.ClientID)
+	plan.ID = types.StringValue(newResourceID)
 	plan.ClientID = types.StringValue(clientResponse.ClientID)
 	plan.ClientSecret = types.StringValue(clientResponse.ClientSecret)
 

@@ -1,3 +1,8 @@
+# We need proper permissions to create clients, this usually involves CLI authentication
+provider "sitecoreai" {
+  use_cli = true
+}
+
 # Use the project data source to get information about a project by name
 data "sitecoreai_project" "default" {
   name = "XMC" # Replace with an existing project name
@@ -6,7 +11,7 @@ data "sitecoreai_project" "default" {
 # Use the environment data source to get information about an environment
 data "sitecoreai_environment" "default" {
   project_id = data.sitecoreai_project.default.id
-  name       = "production" # Replace with existing environment name
+  name       = "dev" # Replace with existing environment name
 }
 
 # Create a CM automation client

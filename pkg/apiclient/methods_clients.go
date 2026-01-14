@@ -14,6 +14,47 @@ type ClientCreateResponse struct {
 	ClientSecret string `json:"clientSecret,omitempty"`
 }
 
+type ClientType int
+
+const (
+	ClientTypeCM          ClientType = 1
+	ClientTypeEdge        ClientType = 2
+	ClientTypeDeploy      ClientType = 3
+	ClientTypeEditingHost ClientType = 4
+)
+
+// ClientDto represents a client in the response
+type ClientDto struct {
+	ID              string     `json:"id,omitempty"`
+	Name            string     `json:"name,omitempty"`
+	Description     string     `json:"description,omitempty"`
+	ClientID        string     `json:"clientId,omitempty"`
+	CreatedAt       string     `json:"createdAt,omitempty"`
+	ClientType      ClientType `json:"clientType,omitempty"`
+	ProjectName     string     `json:"projectName,omitempty"`
+	EnvironmentName string     `json:"environmentName,omitempty"`
+}
+
+// OrganizationClientDto represents an organization client in the response
+type OrganizationClientDto struct {
+	ID          string     `json:"id,omitempty"`
+	Name        string     `json:"name,omitempty"`
+	Description string     `json:"description,omitempty"`
+	ClientID    string     `json:"clientId,omitempty"`
+	CreatedAt   string     `json:"createdAt,omitempty"`
+	ClientType  ClientType `json:"clientType,omitempty"`
+}
+
+// ClientsListResponse represents the response when getting environment clients
+type ClientsListResponse struct {
+	Items []ClientDto `json:"items,omitempty"`
+}
+
+// OrganizationClientsListResponse represents the response when getting organization clients
+type OrganizationClientsListResponse struct {
+	Items []OrganizationClientDto `json:"items,omitempty"`
+}
+
 // CMClientCreateRequest represents the request for creating a CM client
 type CMClientCreateRequest struct {
 	Name          string `json:"name"`
@@ -179,11 +220,11 @@ func (c *Client) CreateEditingHostBuildClient(projectID string, environmentID st
 }
 
 // DeleteClient deletes an automation client by ID
-func (c *Client) DeleteClient(clientID string) error {
+func (c *Client) DeleteClient(id string) error {
 	// Create request options
 	opts := RequestOptions{
 		Method: "DELETE",
-		Path:   fmt.Sprintf("/api/clients/v1/%s", clientID),
+		Path:   fmt.Sprintf("/api/clients/v1/%s", id),
 	}
 
 	// Make the request
@@ -195,4 +236,56 @@ func (c *Client) DeleteClient(clientID string) error {
 	defer func() { _ = resp.Body.Close() }()
 
 	return nil
+}
+
+// GetClientsForOrganization retrieves a list of automation clients for the organization
+func (c *Client) GetClientsForOrganization() (*OrganizationClientsListResponse, error) {
+	// Create request options
+	opts := RequestOptions{
+		Method: "GET",
+		Path:   "/api/clients/v1/organization",
+	}
+
+	// Make the request
+	resp, err := c.doRequest(opts)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get organization clients: %v", err)
+	}
+
+	defer func() { _ = resp.Body.Close() }()
+
+	// Parse the response
+	var response OrganizationClientsListResponse
+	err = json.NewDecoder(resp.Body).Decode(&response)
+	if err != nil {
+		return nil, fmt.Errorf("failed to decode organization clients response: %v", err)
+	}
+
+	return &response, nil
+}
+
+// GetClientsForEnvironment retrieves a list of automation clients for environments
+func (c *Client) GetClientsForEnvironment() (*ClientsListResponse, error) {
+	// Create request options
+	opts := RequestOptions{
+		Method: "GET",
+		Path:   "/api/clients/v1/environment",
+	}
+
+	// Make the request
+	resp, err := c.doRequest(opts)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get environment clients: %v", err)
+	}
+
+	defer func() { _ = resp.Body.Close() }()
+
+	// Parse the response
+	var response ClientsListResponse
+	err = json.NewDecoder(resp.Body).Decode(&response)
+	if err != nil {
+		return nil, fmt.Errorf("failed to decode environment clients response: %v", err)
+	}
+
+	return &response, nil
 }

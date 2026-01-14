@@ -27,7 +27,7 @@ The document generation tool looks for files in the following locations by defau
 Usually terraform providers are found through the registry, however you can specify a local override where a certain provider is found. This can be specified in a `.terraformrc` file in the user's home directory, or the environment variable `TF_CLI_CONFIG_FILE` can point to a `*.tfrc` file. We have created a `localdev.tfrc` and hereby you can run
 
 ```bash
-go build -o out/terraform-provider-sitecoreai
+go build
 cd examples
 export TF_CLI_CONFIG_FILE=$(pwd)/localdev.tfrc
 ```
