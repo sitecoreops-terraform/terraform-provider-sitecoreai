@@ -14,7 +14,7 @@ type ClientInterface interface {
 	DeleteProject(id string) error
 	GetProjectEnvironments(projectID string) ([]Environment, error)
 	GetEnvironment(projectID string, environmentID string) (*Environment, error)
-	CreateEnvironment(projectID string, name string, isProd bool, tenantType EnvironmentType) (*Environment, error)
+	CreateEnvironment(projectID string, name string, isProd bool, tenantType EnvironmentType, cmEnvironmentId string) (*Environment, error)
 	DeleteEnvironment(projectID string, environmentID string) error
 	CreateCMClient(projectID string, environmentID string, name string, description string) (*ClientCreateResponse, error)
 	CreateEdgeClient(projectID string, environmentID string, name string, description string) (*ClientCreateResponse, error)
@@ -193,7 +193,7 @@ func (m *MockClient) GetEnvironment(projectID string, environmentID string) (*En
 	return nil, fmt.Errorf("environment not found")
 }
 
-func (m *MockClient) CreateEnvironment(projectID string, name string, isProd bool, tenantType EnvironmentType) (*Environment, error) {
+func (m *MockClient) CreateEnvironment(projectID string, name string, isProd bool, tenantType EnvironmentType, cmEnvironmentId string) (*Environment, error) {
 	if m.ShouldFail && m.FailOnMethod == "CreateEnvironment" {
 		return nil, fmt.Errorf("mock create environment failed")
 	}

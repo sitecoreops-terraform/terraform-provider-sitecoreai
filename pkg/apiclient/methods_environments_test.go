@@ -87,7 +87,7 @@ func TestCreateEnvironment(t *testing.T) {
 	t.Logf("Testing with project: %s (ID: %s)", project.Name, project.ID)
 
 	// Create environment
-	env, err := client.CreateEnvironment(project.ID, testEnvironmentName, true, EnvironmentTypeCmOnly)
+	env, err := client.CreateEnvironment(project.ID, testEnvironmentName, true, EnvironmentTypeCmOnly, "")
 	if err != nil {
 		t.Errorf("CreateEnvironment failed: %v", err)
 	}

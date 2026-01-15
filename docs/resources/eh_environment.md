@@ -1,41 +1,46 @@
 ---
-page_title: "sitecoreai_cm_environment Resource - sitecoreai"
+page_title: "sitecoreai_eh_environment Resource - sitecoreai"
 subcategory: "Environments"
 description: |-
-  Manages a Sitecore CM-only environment
+  Manages a Sitecore EH-only environment
 ---
 
-# sitecoreai_cm_environment (Resource)
+# sitecoreai_eh_environment (Resource)
 
-Manages a Sitecore CM-only environment
+Manages a Sitecore EH-only environment
 
--> This manages a dedicated content management environment available from SitecoreAI Deploy API v2.
+-> This manages a dedicated editing host environment available from SitecoreAI Deploy API v2.
 -> If you are using the older combined environment for both Content Management and Editing host(s), you should use [environment](./environment.md)
 
 ## Example Usage
 
 ```terraform
-# Use the project data source to get information about a project by name
 data "sitecoreai_project" "default" {
   name = "XMC" # Replace with an existing project name
 }
 
-# Create a CM environment
-resource "sitecoreai_cm_environment" "cm_production" {
-  name       = "production"
+# Get the CM environment to associate with the EH environment
+data "sitecoreai_environment" "default" {
   project_id = data.sitecoreai_project.default.id
-  is_prod    = true
+  name       = "dev" # Replace with existing CM environment name
 }
 
-# Output CM environment details
-output "cm_environment_id" {
-  value       = sitecoreai_cm_environment.cm_production.id
-  description = "The ID of the CM environment"
+# Create editing host environment
+resource "sitecoreai_eh_environment" "website" {
+  name              = "website"
+  project_id        = data.sitecoreai_project.default.id
+  cm_environment_id = data.sitecoreai_environment.default.id
 }
 
-output "cm_environment_name" {
-  value       = sitecoreai_cm_environment.cm_production.name
-  description = "The name of the CM environment"
+# Output editing host environment details
+output "eh_environment_id" {
+  value       = sitecoreai_eh_environment.website.id
+  description = "The ID of the EH environment"
+}
+
+output "eh_environment_name" {
+  value       = sitecoreai_eh_environment.website.name
+  description = "The name of the EH environment"
 }
 ```
 
@@ -49,6 +54,7 @@ output "cm_environment_name" {
 
 ### Optional
 
+- `cm_environment_id` (String) The ID of the CM environment to associate with this EH environment
 - `is_prod` (Boolean) Whether this is a production environment
 
 ### Read-Only

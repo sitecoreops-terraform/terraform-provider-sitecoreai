@@ -165,6 +165,7 @@ func (r *cmEnvironmentResource) Create(ctx context.Context, req resource.CreateR
 		plan.Name.ValueString(),
 		isProd,
 		apiclient.EnvironmentTypeCmOnly,
+		"", // CM environments don't need cmEnvironmentId
 	)
 	if err != nil {
 		resp.Diagnostics.AddError(

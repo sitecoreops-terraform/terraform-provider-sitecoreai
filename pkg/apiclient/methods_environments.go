@@ -38,12 +38,17 @@ type Environment struct {
 }
 
 type CreateEnvironmentRequest struct {
-	Name                 string `json:"name"`
-	TenantType           int    `json:"tenantType,omitempty"`
-	Type                 string `json:"type,omitempty"`
-	RepositoryBranch     string `json:"repositoryBranch,omitempty"`
-	SitecoreMajorVersion int    `json:"sitecoreMajorVersion,omitempty"`
-	DeployOnCommit       bool   `json:"deployOnCommit,omitempty"`
+	Name                          string                        `json:"name"`
+	TenantType                    int                           `json:"tenantType,omitempty"`
+	Type                          string                        `json:"type,omitempty"`
+	RepositoryBranch              string                        `json:"repositoryBranch,omitempty"`
+	SitecoreMajorVersion          int                           `json:"sitecoreMajorVersion,omitempty"`
+	DeployOnCommit                bool                          `json:"deployOnCommit,omitempty"`
+	EditingHostEnvironmentDetails EditingHostEnvironmentDetails `json:"editingHostEnvironmentDetails,omitempty"`
+}
+
+type EditingHostEnvironmentDetails struct {
+	CmEnvironmentId string `json:"cmEnvironmentId,omitempty"`
 }
 
 type EnvironmentType int
@@ -55,7 +60,7 @@ const (
 )
 
 // CreateEnvironment creates a new environment for a project using v2 API
-func (c *Client) CreateEnvironment(projectID string, name string, isProd bool, environmentType EnvironmentType) (*Environment, error) {
+func (c *Client) CreateEnvironment(projectID string, name string, isProd bool, environmentType EnvironmentType, cmEnvironmentId string) (*Environment, error) {
 
 	tenantType := 0
 	if isProd {
@@ -76,6 +81,12 @@ func (c *Client) CreateEnvironment(projectID string, name string, isProd bool, e
 		Name:       name,
 		TenantType: tenantType,
 		Type:       envType,
+	}
+
+	if cmEnvironmentId != "" {
+		body.EditingHostEnvironmentDetails = EditingHostEnvironmentDetails{
+			CmEnvironmentId: cmEnvironmentId,
+		}
 	}
 
 	// Create request options for v2 API
@@ -217,7 +228,7 @@ func (c *Client) WaitForEnvironmentReady(environmentID string, timeoutMinutes in
 		}
 
 		// Check if environment has the required context IDs
-		if environment.PreviewContextId != "" && environment.LiveContextId != "" {
+		if (environment.PreviewContextId != "" && environment.LiveContextId != "") || (environment.Type == "eh") {
 			return environment, nil
 		}
 
