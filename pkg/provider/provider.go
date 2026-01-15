@@ -167,6 +167,7 @@ func (p *sitecoreProvider) Resources(_ context.Context) []func() resource.Resour
 		NewProjectResource,
 		NewEnvironmentResource,
 		NewCMEnvironmentResource,
+		NewEHEnvironmentResource,
 		NewCMClientResource,
 		NewEdgeClientResource,
 		NewDeployClientResource,

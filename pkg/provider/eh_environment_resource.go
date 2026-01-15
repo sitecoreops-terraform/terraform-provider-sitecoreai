@@ -1,4 +1,4 @@
-// Environment resource implementation
+// EH Environment resource implementation
 package provider
 
 import (
@@ -15,31 +15,32 @@ import (
 
 // Ensure the implementation satisfies the expected interfaces
 var (
-	_ resource.Resource                = &environmentResource{}
-	_ resource.ResourceWithConfigure   = &environmentResource{}
-	_ resource.ResourceWithImportState = &environmentResource{}
+	_ resource.Resource                = &ehEnvironmentResource{}
+	_ resource.ResourceWithConfigure   = &ehEnvironmentResource{}
+	_ resource.ResourceWithImportState = &ehEnvironmentResource{}
 )
 
-// NewEnvironmentResource is a helper function to simplify the provider implementation
-func NewEnvironmentResource() resource.Resource {
-	return &environmentResource{}
+// NewEHEnvironmentResource is a helper function to simplify the provider implementation
+func NewEHEnvironmentResource() resource.Resource {
+	return &ehEnvironmentResource{}
 }
 
-// environmentResource is the resource implementation
-type environmentResource struct {
+// ehEnvironmentResource is the resource implementation
+type ehEnvironmentResource struct {
 	client *apiclient.Client
 }
 
-// environmentResourceModel maps the resource schema data
-type environmentResourceModel struct {
+// ehEnvironmentResourceModel maps the resource schema data
+type ehEnvironmentResourceModel struct {
 	ID                      types.String `tfsdk:"id"`
 	Name                    types.String `tfsdk:"name"`
 	ProjectID               types.String `tfsdk:"project_id"`
 	IsProd                  types.Bool   `tfsdk:"is_prod"`
-	TenantType              types.String `tfsdk:"tenant_type"`
+	CmEnvironmentId         types.String `tfsdk:"cm_environment_id"`
 	Host                    types.String `tfsdk:"host"`
 	PlatformTenantId        types.String `tfsdk:"platform_tenant_id"`
 	PlatformTenantName      types.String `tfsdk:"platform_tenant_name"`
+	TenantType              types.String `tfsdk:"tenant_type"`
 	CreatedAt               types.String `tfsdk:"created_at"`
 	CreatedBy               types.String `tfsdk:"created_by"`
 	LastUpdatedBy           types.String `tfsdk:"last_updated_by"`
@@ -51,14 +52,14 @@ type environmentResourceModel struct {
 }
 
 // Metadata returns the resource type name
-func (r *environmentResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	resp.TypeName = req.ProviderTypeName + "_environment"
+func (r *ehEnvironmentResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	resp.TypeName = req.ProviderTypeName + "_eh_environment"
 }
 
 // Schema defines the schema for the resource
-func (r *environmentResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *ehEnvironmentResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: `Environments ¤ Manages a traditional SitecoreAI combined environment with both authoring and editing.`,
+		Description: "Environments ¤ Manages a Sitecore EH-only environment",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Description: "The ID of the environment",
@@ -82,9 +83,9 @@ func (r *environmentResource) Schema(_ context.Context, _ resource.SchemaRequest
 				Description: "Whether this is a production environment",
 				Optional:    true,
 			},
-			"tenant_type": schema.StringAttribute{
-				Description: "Indicates if it is production or not, can have the values 'prod' or 'nonprod'",
-				Computed:    true,
+			"cm_environment_id": schema.StringAttribute{
+				Description: "The ID of the CM environment to associate with this EH environment",
+				Optional:    true,
 			},
 			"host": schema.StringAttribute{
 				Description: "The host of the environment",
@@ -96,6 +97,10 @@ func (r *environmentResource) Schema(_ context.Context, _ resource.SchemaRequest
 			},
 			"platform_tenant_name": schema.StringAttribute{
 				Description: "The platform tenant name",
+				Computed:    true,
+			},
+			"tenant_type": schema.StringAttribute{
+				Description: "The tenant type for the environment",
 				Computed:    true,
 			},
 			"created_at": schema.StringAttribute{
@@ -135,7 +140,7 @@ func (r *environmentResource) Schema(_ context.Context, _ resource.SchemaRequest
 }
 
 // Configure adds the provider configured client to the resource
-func (r *environmentResource) Configure(_ context.Context, req resource.ConfigureRequest, _ *resource.ConfigureResponse) {
+func (r *ehEnvironmentResource) Configure(_ context.Context, req resource.ConfigureRequest, _ *resource.ConfigureResponse) {
 	if req.ProviderData == nil {
 		return
 	}
@@ -144,9 +149,9 @@ func (r *environmentResource) Configure(_ context.Context, req resource.Configur
 }
 
 // Create creates the resource and sets the initial Terraform state
-func (r *environmentResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+func (r *ehEnvironmentResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
 	// Retrieve values from plan
-	var plan environmentResourceModel
+	var plan ehEnvironmentResourceModel
 	diags := req.Plan.Get(ctx, &plan)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
@@ -159,21 +164,43 @@ func (r *environmentResource) Create(ctx context.Context, req resource.CreateReq
 		isProd = plan.IsProd.ValueBool()
 	}
 
-	// Call API with Combined environment type
+	// Parse cm_environment_id parameter
+	cmEnvironmentId := ""
+	if !plan.CmEnvironmentId.IsNull() && !plan.CmEnvironmentId.IsUnknown() {
+		cmEnvironmentId = plan.CmEnvironmentId.ValueString()
+	}
+
+	// Call API with EH environment type
 	createdEnvironment, err := r.client.CreateEnvironment(
 		plan.ProjectID.ValueString(),
 		plan.Name.ValueString(),
 		isProd,
-		apiclient.EnvironmentTypeCombined,
-		"", // Combined environments don't need cmEnvironmentId
+		apiclient.EnvironmentTypeEhOnly,
+		cmEnvironmentId,
 	)
 	if err != nil {
 		resp.Diagnostics.AddError(
-			"Error creating environment",
-			"Could not create environment, unexpected error: "+err.Error(),
+			"Error creating EH environment",
+			"Could not create EH environment, unexpected error: "+err.Error(),
 		)
 		return
 	}
+
+	// Wait for environment to be ready with context IDs (timeout after 30 minutes)
+	readyEnvironment, err := r.client.WaitForEnvironmentReady(
+		createdEnvironment.ID,
+		10, // 10 minutes timeout
+	)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Error waiting for EH environment to be ready",
+			"Could not wait for EH environment to be ready: "+err.Error(),
+		)
+		return
+	}
+
+	// Use the ready environment instead of the initially created one
+	createdEnvironment = readyEnvironment
 
 	// Map response body to schema and populate Computed attribute values
 	plan.ID = types.StringValue(createdEnvironment.ID)
@@ -201,9 +228,9 @@ func (r *environmentResource) Create(ctx context.Context, req resource.CreateReq
 }
 
 // Read refreshes the Terraform state with the latest data
-func (r *environmentResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+func (r *ehEnvironmentResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 	// Get current state
-	var state environmentResourceModel
+	var state ehEnvironmentResourceModel
 	diags := req.State.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
@@ -214,8 +241,8 @@ func (r *environmentResource) Read(ctx context.Context, req resource.ReadRequest
 	environment, err := r.client.GetEnvironment(state.ID.ValueString())
 	if err != nil {
 		resp.Diagnostics.AddError(
-			"Error reading environment",
-			"Could not read environment ID "+state.ID.ValueString()+": "+err.Error(),
+			"Error reading EH environment",
+			"Could not read EH environment ID "+state.ID.ValueString()+": "+err.Error(),
 		)
 		return
 	}
@@ -250,9 +277,9 @@ func (r *environmentResource) Read(ctx context.Context, req resource.ReadRequest
 }
 
 // Update updates the resource and sets the updated Terraform state on success
-func (r *environmentResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+func (r *ehEnvironmentResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 	// Retrieve values from plan
-	var plan environmentResourceModel
+	var plan ehEnvironmentResourceModel
 	diags := req.Plan.Get(ctx, &plan)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
@@ -260,7 +287,7 @@ func (r *environmentResource) Update(ctx context.Context, req resource.UpdateReq
 	}
 
 	// Get current state
-	var state environmentResourceModel
+	var state ehEnvironmentResourceModel
 	diags = req.State.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
@@ -274,16 +301,11 @@ func (r *environmentResource) Update(ctx context.Context, req resource.UpdateReq
 		ProjectID: plan.ProjectID.ValueString(),
 	}
 
-	// Set tenant type if provided
-	if !plan.TenantType.IsNull() && !plan.TenantType.IsUnknown() {
-		environment.TenantType = plan.TenantType.ValueString()
-	}
-
 	err := r.client.UpdateEnvironment(plan.ProjectID.ValueString(), plan.ID.ValueString(), environment)
 	if err != nil {
 		resp.Diagnostics.AddError(
-			"Error updating environment",
-			"Could not update environment, unexpected error: "+err.Error(),
+			"Error updating EH environment",
+			"Could not update EH environment, unexpected error: "+err.Error(),
 		)
 		return
 	}
@@ -292,8 +314,8 @@ func (r *environmentResource) Update(ctx context.Context, req resource.UpdateReq
 	updatedEnvironment, err := r.client.GetEnvironment(plan.ID.ValueString())
 	if err != nil {
 		resp.Diagnostics.AddError(
-			"Error reading updated environment",
-			"Could not read updated environment ID "+plan.ID.ValueString()+": "+err.Error(),
+			"Error reading updated EH environment",
+			"Could not read updated EH environment ID "+plan.ID.ValueString()+": "+err.Error(),
 		)
 		return
 	}
@@ -322,9 +344,9 @@ func (r *environmentResource) Update(ctx context.Context, req resource.UpdateReq
 }
 
 // Delete deletes the resource and removes the Terraform state on success
-func (r *environmentResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+func (r *ehEnvironmentResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
 	// Retrieve values from state
-	var state environmentResourceModel
+	var state ehEnvironmentResourceModel
 	diags := req.State.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
@@ -335,15 +357,15 @@ func (r *environmentResource) Delete(ctx context.Context, req resource.DeleteReq
 	err := r.client.DeleteEnvironment(state.ID.ValueString())
 	if err != nil {
 		resp.Diagnostics.AddError(
-			"Error deleting environment",
-			"Could not delete environment, unexpected error: "+err.Error(),
+			"Error deleting EH environment",
+			"Could not delete EH environment, unexpected error: "+err.Error(),
 		)
 		return
 	}
 }
 
-// ImportState imports an existing environment into Terraform state
-func (r *environmentResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+// ImportState imports an existing EH environment into Terraform state
+func (r *ehEnvironmentResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	// Retrieve import ID and save to id attribute
 	// Expected format: project_id,environment_id
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)

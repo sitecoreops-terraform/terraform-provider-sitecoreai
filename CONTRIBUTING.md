@@ -10,6 +10,18 @@ The folder structure:
 * `examples/` with several terraform examples to show how the provider can be used in terraform modules.
 * `docs/` contains the provider documentation for the Terraform registry. Everything here is automatically generated and should not be edited manually.
 
+## Steps involved
+
+When adding an endpoint / terraform resource you need to ensure or create that there are:
+
+* Methods in apiclient for the endpoint
+* Integration tests in apiclient that will call the actual endpoint based on environment variables
+* Create unit test in apiclient working with mocked response
+* Create resource in provider
+* Create unit test in provider of resource schema
+* Create example in `/examples/resources` folder to include in documentation
+* If additional documentation is needed, create a template for the resource in `/templates/resources` folder, often this can be omitted. Do not edit files in `/docs` folder as those are generated.
+
 ## Initial setup
 
 ```bash
