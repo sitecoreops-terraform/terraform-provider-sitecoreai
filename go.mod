@@ -1,4 +1,4 @@
-module github.com/sitecoreops/terraform-provider-sitecoreai
+module github.com/sitecoreops-terraform/terraform-provider-sitecoreai
 
 go 1.24.0
 
@@ -27,4 +27,13 @@ require (
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20250707201910-8d1bb00bc6a7 // indirect
 	google.golang.org/grpc v1.75.1 // indirect
 	google.golang.org/protobuf v1.36.9 // indirect
+)
+
+tool (
+	github.com/bflad/tfproviderdocs
+	github.com/bflad/tfproviderlint/cmd/tfproviderlint
+	github.com/bflad/tfproviderlint/cmd/tfproviderlintx
+	github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs
+	github.com/katbyte/terrafmt
+	gotest.tools/gotestsum
 )

@@ -30,8 +30,8 @@ func TestProjectResourceSchema(t *testing.T) {
 
 	r.Schema(context.Background(), req, &resp)
 
-	if resp.Schema.Description != "Manages a Sitecore project" {
-		t.Errorf("Expected schema description to be 'Manages a Sitecore project', got '%s'", resp.Schema.Description)
+	if resp.Schema.Description != "Environments ¤ Manages a Sitecore project" {
+		t.Errorf("Expected schema description to be 'Environments ¤ Manages a Sitecore project', got '%s'", resp.Schema.Description)
 	}
 
 	// Check that required attributes are present

@@ -12,7 +12,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/provider/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/sitecoreops/terraform-provider-sitecoreai/pkg/apiclient"
+	"github.com/sitecoreops-terraform/terraform-provider-sitecoreai/pkg/apiclient"
 )
 
 // Ensure the implementation satisfies the expected interfaces
@@ -53,7 +53,7 @@ func (p *sitecoreProvider) Metadata(_ context.Context, _ provider.MetadataReques
 // Schema defines the provider-level schema for configuration data
 func (p *sitecoreProvider) Schema(_ context.Context, _ provider.SchemaRequest, resp *provider.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: "Interact with Sitecore AI",
+		Description: "Interact with SitecoreAI",
 		Attributes: map[string]schema.Attribute{
 			"client_id": schema.StringAttribute{
 				Description: "The client ID for Sitecore API authentication",

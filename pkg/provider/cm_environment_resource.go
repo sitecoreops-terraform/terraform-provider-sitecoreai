@@ -10,7 +10,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/sitecoreops/terraform-provider-sitecoreai/pkg/apiclient"
+	"github.com/sitecoreops-terraform/terraform-provider-sitecoreai/pkg/apiclient"
 )
 
 // Ensure the implementation satisfies the expected interfaces
@@ -58,7 +58,7 @@ func (r *cmEnvironmentResource) Metadata(_ context.Context, req resource.Metadat
 // Schema defines the schema for the resource
 func (r *cmEnvironmentResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: "Manages a Sitecore CM-only environment",
+		Description: "Environments ¤ Manages a Sitecore CM-only environment",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Description: "The ID of the environment",

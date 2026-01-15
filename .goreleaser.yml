@@ -60,5 +60,12 @@ release:
       name_template: '{{ .ProjectName }}_{{ .Version }}_manifest.json'
   # If you want to manually examine the release before its live, uncomment this line:
   # draft: true
+  footer: |
+    ## Checksums
+
+    You can verify the checksums of the binaries by downloading the SHA256SUMS file and running:
+    ```bash
+    sha256sum -c SHA256SUMS
+    ```
 changelog:
   disable: true

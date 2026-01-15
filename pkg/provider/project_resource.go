@@ -10,7 +10,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/sitecoreops/terraform-provider-sitecoreai/pkg/apiclient"
+	"github.com/sitecoreops-terraform/terraform-provider-sitecoreai/pkg/apiclient"
 )
 
 // Ensure the implementation satisfies the expected interfaces
@@ -45,7 +45,7 @@ func (r *projectResource) Metadata(_ context.Context, req resource.MetadataReque
 // Schema defines the schema for the resource
 func (r *projectResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: "Manages a Sitecore project",
+		Description: "Environments ¤ Manages a Sitecore project",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Description: "The ID of the project",

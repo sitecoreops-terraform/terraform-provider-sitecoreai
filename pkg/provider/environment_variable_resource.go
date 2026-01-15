@@ -11,7 +11,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/sitecoreops/terraform-provider-sitecoreai/pkg/apiclient"
+	"github.com/sitecoreops-terraform/terraform-provider-sitecoreai/pkg/apiclient"
 )
 
 // Ensure the implementation satisfies the expected interfaces
@@ -47,10 +47,7 @@ func (r *environmentVariableResource) Metadata(_ context.Context, req resource.M
 // Schema defines the schema for the resource
 func (r *environmentVariableResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: `Manages an environment variable for a Sitecore environment.
-		
-		Environment variables are key-value pairs that can be used to configure
-		environment-specific settings for Sitecore environments.`,
+		Description: `Environments ¤ Manages an environment variable for a Sitecore environment.`,
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Description: "The ID of the environment variable (composite of environment_id and name)",

@@ -10,7 +10,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/sitecoreops/terraform-provider-sitecoreai/pkg/apiclient"
+	"github.com/sitecoreops-terraform/terraform-provider-sitecoreai/pkg/apiclient"
 )
 
 // Ensure the implementation satisfies the expected interfaces
@@ -49,7 +49,7 @@ func (r *edgeClientResource) Metadata(_ context.Context, req resource.MetadataRe
 // Schema defines the schema for the resource
 func (r *edgeClientResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: "Manages a Sitecore Edge automation client",
+		Description: "Automation Clients ¤ Manages a Sitecore Edge automation client",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Description: "The ID of the Edge client",
