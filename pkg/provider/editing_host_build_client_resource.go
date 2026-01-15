@@ -49,7 +49,7 @@ func (r *editingHostBuildClientResource) Metadata(_ context.Context, req resourc
 // Schema defines the schema for the resource
 func (r *editingHostBuildClientResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: "Manages a Sitecore Editing Host Build automation client",
+		Description: "Automation Clients ¤ Manages a Sitecore Editing Host Build automation client",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Description: "The ID of the Editing Host Build client",

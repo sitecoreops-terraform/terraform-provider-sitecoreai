@@ -49,7 +49,7 @@ func (r *edgeClientResource) Metadata(_ context.Context, req resource.MetadataRe
 // Schema defines the schema for the resource
 func (r *edgeClientResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: "Manages a Sitecore Edge automation client",
+		Description: "Automation Clients ¤ Manages a Sitecore Edge automation client",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Description: "The ID of the Edge client",

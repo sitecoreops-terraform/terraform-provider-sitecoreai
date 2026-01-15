@@ -47,10 +47,7 @@ func (r *environmentVariableResource) Metadata(_ context.Context, req resource.M
 // Schema defines the schema for the resource
 func (r *environmentVariableResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: `Manages an environment variable for a Sitecore environment.
-		
-		Environment variables are key-value pairs that can be used to configure
-		environment-specific settings for Sitecore environments.`,
+		Description: `Environments ¤ Manages an environment variable for a Sitecore environment.`,
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Description: "The ID of the environment variable (composite of environment_id and name)",

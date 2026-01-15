@@ -58,7 +58,7 @@ func (r *cmEnvironmentResource) Metadata(_ context.Context, req resource.Metadat
 // Schema defines the schema for the resource
 func (r *cmEnvironmentResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: "Manages a Sitecore CM-only environment",
+		Description: "Environments ¤ Manages a Sitecore CM-only environment",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Description: "The ID of the environment",

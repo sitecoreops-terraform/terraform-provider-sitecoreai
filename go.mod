@@ -28,3 +28,12 @@ require (
 	google.golang.org/grpc v1.75.1 // indirect
 	google.golang.org/protobuf v1.36.9 // indirect
 )
+
+tool (
+	github.com/bflad/tfproviderdocs
+	github.com/bflad/tfproviderlint/cmd/tfproviderlint
+	github.com/bflad/tfproviderlint/cmd/tfproviderlintx
+	github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs
+	github.com/katbyte/terrafmt
+	gotest.tools/gotestsum
+)

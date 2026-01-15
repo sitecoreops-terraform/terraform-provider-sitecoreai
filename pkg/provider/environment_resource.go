@@ -58,10 +58,7 @@ func (r *environmentResource) Metadata(_ context.Context, req resource.MetadataR
 // Schema defines the schema for the resource
 func (r *environmentResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: `Manages a traditional SitecoreAI combined environment with both authoring and editing. 
-		
-			Be aware of the new separate environments, then use sitecoreai_cm_environment and sitecoreai_eh_environment.
-		`,
+		Description: `Environments ¤ Manages a traditional SitecoreAI combined environment with both authoring and editing.`,
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Description: "The ID of the environment",

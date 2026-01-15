@@ -47,7 +47,7 @@ func (r *deployClientResource) Metadata(_ context.Context, req resource.Metadata
 // Schema defines the schema for the resource
 func (r *deployClientResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: "Manages a Sitecore Deploy automation client",
+		Description: "Automation Clients ¤ Manages a Sitecore Deploy automation client",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Description: "The ID of the Deploy client",
