@@ -30,8 +30,8 @@ func TestCMClientResourceSchema(t *testing.T) {
 
 	r.Schema(context.Background(), req, &resp)
 
-	if resp.Schema.Description != "Manages a Sitecore CM automation client" {
-		t.Errorf("Expected schema description to be 'Manages a Sitecore CM automation client', got '%s'", resp.Schema.Description)
+	if resp.Schema.Description != "Automation Clients ¤ Manages a Sitecore CM automation client" {
+		t.Errorf("Expected schema description to be 'Automation Clients ¤ Manages a Sitecore CM automation client', got '%s'", resp.Schema.Description)
 	}
 
 	// Check that required attributes are present

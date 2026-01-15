@@ -32,8 +32,8 @@ func TestProviderSchema(t *testing.T) {
 
 	p.Schema(context.Background(), req, &resp)
 
-	if resp.Schema.Description != "Interact with Sitecore AI" {
-		t.Errorf("Expected schema description to be 'Interact with Sitecore AI', got '%s'", resp.Schema.Description)
+	if resp.Schema.Description != "Interact with SitecoreAI" {
+		t.Errorf("Expected schema description to be 'Interact with SitecoreAI', got '%s'", resp.Schema.Description)
 	}
 
 	// Check that required attributes are present
