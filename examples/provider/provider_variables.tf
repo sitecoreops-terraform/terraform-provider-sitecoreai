@@ -4,7 +4,7 @@ terraform {
       source = "sitecoreops-terraform/sitecoreai"
     }
   }
-  required_version = ">= 1.0.0"
+  required_version = ">= 0.1.0"
 }
 
 # Configure the Sitecore AI provider
