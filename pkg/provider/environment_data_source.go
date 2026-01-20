@@ -54,7 +54,7 @@ func (d *environmentDataSource) Metadata(_ context.Context, req datasource.Metad
 // Schema defines the schema for the data source
 func (d *environmentDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: "Use this data source to get information about a Sitecore environment by project ID and name",
+		Description: "Environments ¤ Use this data source to get information about a Sitecore environment by project ID and name",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Description: "The ID of the environment",

@@ -42,7 +42,7 @@ func (d *projectDataSource) Metadata(_ context.Context, req datasource.MetadataR
 // Schema defines the schema for the data source
 func (d *projectDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: "Use this data source to get information about a Sitecore project by name",
+		Description: "Environments ¤ Use this data source to get information about a Sitecore project by name",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Description: "The ID of the project",

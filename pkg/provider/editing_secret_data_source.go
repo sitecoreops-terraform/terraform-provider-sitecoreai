@@ -40,7 +40,7 @@ func (d *editingSecretDataSource) Metadata(_ context.Context, req datasource.Met
 // Schema defines the schema for the data source
 func (d *editingSecretDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: "Use this data source to get the editing secret for a Sitecore environment",
+		Description: "Environments ¤ Use this data source to get the editing secret for a Sitecore environment",
 		Attributes: map[string]schema.Attribute{
 			"environment_id": schema.StringAttribute{
 				Description: "The ID of the environment to get the editing secret for",
