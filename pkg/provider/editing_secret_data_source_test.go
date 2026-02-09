@@ -30,7 +30,7 @@ func TestEditingSecretDataSourceSchema(t *testing.T) {
 
 	d.Schema(context.Background(), req, &resp)
 
-	if resp.Schema.Description != "Use this data source to get the editing secret for a Sitecore environment" {
+	if resp.Schema.Description != "Environments ¤ Use this data source to get the editing secret for a Sitecore environment" {
 		t.Errorf("Expected schema description to be 'Use this data source to get the editing secret for a Sitecore environment', got '%s'", resp.Schema.Description)
 	}
 

@@ -30,7 +30,7 @@ func TestEnvironmentDataSourceSchema(t *testing.T) {
 
 	d.Schema(context.Background(), req, &resp)
 
-	if resp.Schema.Description != "Use this data source to get information about a Sitecore environment by project ID and name" {
+	if resp.Schema.Description != "Environments ¤ Use this data source to get information about a Sitecore environment by project ID and name" {
 		t.Errorf("Expected schema description to be 'Use this data source to get information about a Sitecore environment by project ID and name', got '%s'", resp.Schema.Description)
 	}
 
