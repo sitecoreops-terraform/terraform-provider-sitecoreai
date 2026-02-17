@@ -4,8 +4,8 @@ package provider
 import (
 	"context"
 	"fmt"
+	"strings"
 
-	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
@@ -228,6 +228,47 @@ func (r *environmentVariableResource) Delete(ctx context.Context, req resource.D
 
 // ImportState imports an existing environment variable into Terraform state
 func (r *environmentVariableResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	// Expected format: environment_id,name
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+	// Expected format: environment_id:name (consistent with Create method)
+	idParts := strings.Split(req.ID, ":")
+	if len(idParts) != 2 || idParts[0] == "" || idParts[1] == "" {
+		resp.Diagnostics.AddError(
+			"Invalid import ID format",
+			"Expected format: environment_id:name",
+		)
+		return
+	}
+
+	environmentID := idParts[0]
+	variableName := idParts[1]
+
+	// Generate composite ID: environment_id:name
+	compositeID := fmt.Sprintf("%s:%s", environmentID, variableName)
+
+	// Set the composite ID and individual attributes
+	var state environmentVariableResourceModel
+	state.ID = types.StringValue(compositeID)
+	state.EnvironmentID = types.StringValue(environmentID)
+	state.Name = types.StringValue(variableName)
+
+	// Fetch the variable value from the API to ensure it exists
+	variables, err := r.client.GetEnvironmentVariables(environmentID)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Error reading environment variables during import",
+			"Could not read environment variables: "+err.Error(),
+		)
+		return
+	}
+
+	if _, exists := variables[variableName]; !exists {
+		resp.Diagnostics.AddError(
+			"Environment variable not found",
+			fmt.Sprintf("Environment variable '%s' not found in environment '%s'", variableName, environmentID),
+		)
+		return
+	}
+
+	// Set the state
+	diags := resp.State.Set(ctx, &state)
+	resp.Diagnostics.Append(diags...)
 }
