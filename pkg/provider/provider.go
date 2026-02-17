@@ -87,7 +87,7 @@ func (p *sitecoreProvider) Configure(ctx context.Context, req provider.Configure
 
 	// Handle environment variables
 	// Check if CLI authentication is requested
-	useCLI := os.Getenv("SITECOREAI_USE_CLI") == "1"
+	useCLI := os.Getenv("SITECOREAI_USE_CLI") == "1" || os.Getenv("SITECOREAI_USE_CLI") == "true"
 	if !config.UseCLI.IsNull() {
 		useCLI = config.UseCLI.ValueBool()
 	}
