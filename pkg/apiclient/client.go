@@ -98,7 +98,7 @@ func NewClientWithAllConfig(baseUrl string, authUrl string, clientId string, cli
 }
 
 func setupProxy(client *http.Client) {
-	proxy := os.Getenv("HTTPS_PROXY")
+	proxy := os.Getenv("SITECOREAI_PROXY")
 
 	if proxy != "" {
 		proxyURL, err := url.Parse(proxy)

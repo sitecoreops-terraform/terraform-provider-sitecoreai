@@ -51,7 +51,7 @@ export TF_LOG=DEBUG
 
 ### Proxy Setup for Diagnostics
 ```bash
-export HTTPS_PROXY="http://host.docker.internal:8081"
+export SITECOREAI_PROXY="http://host.docker.internal:8081"
 ```
 
 ### Authentication
