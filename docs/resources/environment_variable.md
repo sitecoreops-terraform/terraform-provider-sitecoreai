@@ -43,3 +43,25 @@ resource "sitecoreai_environment_variable" "env" {
 ### Read-Only
 
 - `id` (String) The ID of the environment variable (composite of environment_id and name)
+
+## Import
+
+Import is supported using the following syntax:
+
+In Terraform v1.5.0 and later, the [`import` block](https://developer.hashicorp.com/terraform/language/import) can be used with the `id` attribute, for example:
+
+```terraform
+resource "sitecoreai_environment_variable" "env" {
+  environment_id = "environment-1234"
+
+  name  = "SXA_ENVIRONMENT_NAME"
+  value = "dev"
+}
+```
+
+The [`terraform import` command](https://developer.hashicorp.com/terraform/cli/commands/import) can be used, for example:
+
+```shell
+# Import using the format `<environment_id>:<variable_name>`
+terraform import sitecoreai_environment_variable.example "environment-12345:SXA_ENVIRONMENT_NAME"
+```
