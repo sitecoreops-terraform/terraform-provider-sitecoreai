@@ -5,6 +5,12 @@ import (
 	"fmt"
 )
 
+// EnvironmentVariable represents an environment variable from the API
+type EnvironmentVariable struct {
+	Name  string `json:"name"`
+	Value string `json:"value"`
+}
+
 // GetEnvironmentVariables retrieves variables for an environment
 func (c *Client) GetEnvironmentVariables(environmentID string) (map[string]string, error) {
 	// Create request options
@@ -21,14 +27,20 @@ func (c *Client) GetEnvironmentVariables(environmentID string) (map[string]strin
 
 	defer func() { _ = resp.Body.Close() }()
 
-	// Parse the response
-	var variables map[string]string
+	// Parse the response as an array of EnvironmentVariable
+	var variables []EnvironmentVariable
 	err = json.NewDecoder(resp.Body).Decode(&variables)
 	if err != nil {
 		return nil, fmt.Errorf("failed to decode environment variables: %v", err)
 	}
 
-	return variables, nil
+	// Convert the array to a map
+	variablesMap := make(map[string]string)
+	for _, variable := range variables {
+		variablesMap[variable.Name] = variable.Value
+	}
+
+	return variablesMap, nil
 }
 
 // SetEnvironmentVariable sets a variable for an environment
