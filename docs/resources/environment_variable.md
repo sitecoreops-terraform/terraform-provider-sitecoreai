@@ -2,12 +2,12 @@
 page_title: "sitecoreai_environment_variable Resource - sitecoreai"
 subcategory: "Environments"
 description: |-
-  Manages an environment variable for a Sitecore environment.
+  Manages an environment variable for SitecoreAI environment.
 ---
 
 # sitecoreai_environment_variable (Resource)
 
-Manages an environment variable for a Sitecore environment.
+Manages an environment variable for SitecoreAI environment.
 
 Environment variables are key-value pairs that can be used to configure environment-specific settings for SitecoreAI environments.
 
@@ -23,12 +23,34 @@ data "sitecoreai_environment" "default" {
   name       = "dev"
 }
 
-resource "sitecoreai_environment_variable" "env" {
-  environment_id = data.sitecoreai_environment.default.id
+resource "sitecoreai_environment_variable" "shared" {
+  environment_id = sitecoreai_environment.default.id
+  name           = "SHARED_VAR"
+  value          = "hello_world" # Non-sensitive value
+  # No target specified (applies to all targets)
+}
 
-  name   = "SXA_ENVIRONMENT_NAME"
-  value  = "dev"
-  target = "CM"
+# Example: CM environment variable
+resource "sitecoreai_environment_variable" "playground" {
+  environment_id = ssitecoreai_environment.default.id
+  target         = "CM" # CM target
+  name           = "Sitecore_GraphQL_ExposePlayground"
+  value          = "true" # Non-sensitive value
+}
+
+resource "sitecoreai_environment_variable" "cm_secret" {
+  environment_id = sitecoreai_environment.default.id
+  target         = "CM" # CM target
+  name           = "CM_SECRET_VAR"
+  secret_value   = "s3cr3t_p@ssw0rd" # Sensitive value (masked in logs/state)
+}
+
+# Example: EH environment variable
+resource "sitecoreai_environment_variable" "eh_non_secret" {
+  environment_id = sitecoreai_environment.default.id
+  target         = "website" # Target editing host named website in xmcloud.deploy.json
+  name           = "EH_NON_SECRET_VAR"
+  value          = "hello_world" # Non-sensitive value
 }
 ```
 
@@ -59,6 +81,7 @@ In Terraform v1.5.0 and later, the [`import` block](https://developer.hashicorp.
 ```terraform
 resource "sitecoreai_environment_variable" "env" {
   environment_id = "environment-1234"
+  target         = "CM"
 
   name  = "SXA_ENVIRONMENT_NAME"
   value = "dev"

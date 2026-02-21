@@ -63,15 +63,7 @@ func TestEnvironmentVariableResourceConfigure(t *testing.T) {
 	r.Configure(context.Background(), req, &resp)
 
 	// Client should remain nil when no provider data is provided
-	if r.client != nil {
+	if r.base.client != nil {
 		t.Error("Expected client to remain nil when no provider data is provided")
 	}
 }
-
-// Note: ImportState test is skipped for now as it requires complex state setup
-// func TestEnvironmentVariableResourceImportState(t *testing.T) {
-//  	r := environmentVariableResource{}
-//   req := resource.ImportStateRequest{ID: "test-project-id/test-environment-id/test-variable-name"}
-//   resp := resource.ImportStateResponse{}
-//   r.ImportState(context.Background(), req, &resp)
-// }
