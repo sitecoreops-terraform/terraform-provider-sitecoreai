@@ -8,87 +8,57 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/sitecoreops-terraform/terraform-provider-sitecoreai/pkg/apiclient"
 )
 
-// Ensure the implementation satisfies the expected interfaces
+// Ensure the implementation satisfies the expected interfaces.
 var (
 	_ resource.Resource                = &environmentVariableResource{}
 	_ resource.ResourceWithConfigure   = &environmentVariableResource{}
 	_ resource.ResourceWithImportState = &environmentVariableResource{}
 )
 
-// NewEnvironmentVariableResource is a helper function to simplify the provider implementation
+// environmentVariableResourceModel maps the resource schema data.
+type environmentVariableResourceModel struct {
+	baseEnvironmentVariableResourceModel
+	Target types.String `tfsdk:"target"`
+}
+
+// environmentVariableResource extends the base resource to support the target attribute.
+type environmentVariableResource struct {
+	base baseEnvironmentVariableResource
+}
+
+// NewEnvironmentVariableResource creates a new environment variable resource.
 func NewEnvironmentVariableResource() resource.Resource {
 	return &environmentVariableResource{}
 }
 
-// environmentVariableResource is the resource implementation
-type environmentVariableResource struct {
-	client *apiclient.Client
-}
-
-// environmentVariableResourceModel maps the resource schema data
-type environmentVariableResourceModel struct {
-	ID            types.String `tfsdk:"id"`
-	Name          types.String `tfsdk:"name"`
-	Value         types.String `tfsdk:"value"`
-	EnvironmentID types.String `tfsdk:"environment_id"`
-}
-
-// Metadata returns the resource type name
+// Metadata returns the resource type name.
 func (r *environmentVariableResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_environment_variable"
 }
 
-// Schema defines the schema for the resource
-func (r *environmentVariableResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
-	resp.Schema = schema.Schema{
-		Description: `Environments ¤ Manages an environment variable for a Sitecore environment.`,
-		Attributes: map[string]schema.Attribute{
-			"id": schema.StringAttribute{
-				Description: "The ID of the environment variable (composite of environment_id and name)",
-				Computed:    true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
-				},
-			},
-			"environment_id": schema.StringAttribute{
-				Description: "The ID of the environment to which the variable belongs",
-				Required:    true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.RequiresReplace(),
-				},
-			},
-			"name": schema.StringAttribute{
-				Description: "The name of the environment variable",
-				Required:    true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.RequiresReplace(),
-				},
-			},
-			"value": schema.StringAttribute{
-				Description: "The value of the environment variable",
-				Required:    true,
-				Sensitive:   false,
-			},
-		},
+// Schema defines the schema for the resource.
+func (r *environmentVariableResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
+	// Get the base schema
+	r.base.Schema(ctx, req, resp)
+
+	// Add the 'target' attribute
+	resp.Schema.Attributes["target"] = schema.StringAttribute{
+		Description: "The target for the environment variable (CM, EH, or custom editing host name). Leave empty for all targets.",
+		Optional:    true,
 	}
+	resp.Schema.Description = "Environments ¤ Manages an environment variable for SitecoreAI environment."
 }
 
-// Configure adds the provider configured client to the resource
-func (r *environmentVariableResource) Configure(_ context.Context, req resource.ConfigureRequest, _ *resource.ConfigureResponse) {
-	if req.ProviderData == nil {
-		return
-	}
-
-	r.client = req.ProviderData.(*apiclient.Client)
+// Configure adds the provider-configured client to the resource.
+func (r *environmentVariableResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
+	r.base.Configure(ctx, req, resp)
 }
 
-// Create creates the resource and sets the initial Terraform state
+// Create creates the resource and sets the initial Terraform state.
 func (r *environmentVariableResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
 	// Retrieve values from plan
 	var plan environmentVariableResourceModel
@@ -98,79 +68,28 @@ func (r *environmentVariableResource) Create(ctx context.Context, req resource.C
 		return
 	}
 
-	// Set the environment variable using the API
-	err := r.client.SetEnvironmentVariable(
-		plan.EnvironmentID.ValueString(),
-		plan.Name.ValueString(),
-		plan.Value.ValueString(),
-	)
-	if err != nil {
-		resp.Diagnostics.AddError(
-			"Error creating environment variable",
-			"Could not create environment variable, unexpected error: "+err.Error(),
-		)
+	// Delegate to the base Create method with the target field
+	target := plan.Target.ValueString()
+	r.base.Create(ctx, resource.CreateRequest{Plan: req.Plan}, resp, target)
+	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	// Generate composite ID: project_id:environment_id:name
-	compositeID := fmt.Sprintf("%s:%s",
-		plan.EnvironmentID.ValueString(),
-		plan.Name.ValueString(),
-	)
-
-	// Set the composite ID and other attributes
+	// Generate composite ID: environment_id:target:name
+	var compositeID string
+	if target == "" {
+		compositeID = fmt.Sprintf("%s::%s", plan.EnvironmentID.ValueString(), plan.Name.ValueString())
+	} else {
+		compositeID = fmt.Sprintf("%s:%s:%s", plan.EnvironmentID.ValueString(), target, plan.Name.ValueString())
+	}
 	plan.ID = types.StringValue(compositeID)
 
-	// Set state to fully populated data
+	// Set the state
 	diags = resp.State.Set(ctx, plan)
 	resp.Diagnostics.Append(diags...)
-	if resp.Diagnostics.HasError() {
-		return
-	}
 }
 
-// Read refreshes the Terraform state with the latest data
-func (r *environmentVariableResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
-	// Get current state
-	var state environmentVariableResourceModel
-	diags := req.State.Get(ctx, &state)
-	resp.Diagnostics.Append(diags...)
-	if resp.Diagnostics.HasError() {
-		return
-	}
-
-	// Get all environment variables from API
-	variables, err := r.client.GetEnvironmentVariables(
-		state.EnvironmentID.ValueString(),
-	)
-	if err != nil {
-		resp.Diagnostics.AddError(
-			"Error reading environment variables",
-			"Could not read environment variables: "+err.Error(),
-		)
-		return
-	}
-
-	// Check if our specific variable exists
-	variableValue, exists := variables[state.Name.ValueString()]
-	if !exists {
-		// Variable was deleted outside of Terraform
-		resp.State.RemoveResource(ctx)
-		return
-	}
-
-	// Update the value from the API response
-	state.Value = types.StringValue(variableValue)
-
-	// Set refreshed state
-	diags = resp.State.Set(ctx, &state)
-	resp.Diagnostics.Append(diags...)
-	if resp.Diagnostics.HasError() {
-		return
-	}
-}
-
-// Update updates the resource and sets the updated Terraform state on success
+// Update updates the resource and sets the updated Terraform state on success.
 func (r *environmentVariableResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 	// Retrieve values from plan
 	var plan environmentVariableResourceModel
@@ -180,78 +99,61 @@ func (r *environmentVariableResource) Update(ctx context.Context, req resource.U
 		return
 	}
 
-	// Update the environment variable using the API
-	err := r.client.SetEnvironmentVariable(
-		plan.EnvironmentID.ValueString(),
-		plan.Name.ValueString(),
-		plan.Value.ValueString(),
-	)
-	if err != nil {
-		resp.Diagnostics.AddError(
-			"Error updating environment variable",
-			"Could not update environment variable, unexpected error: "+err.Error(),
-		)
+	// Delegate to the base Update method with the target field
+	target := plan.Target.ValueString()
+	r.base.Update(ctx, resource.UpdateRequest{Plan: req.Plan}, resp, target)
+	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	// Set state to fully populated data
+	// Set the state
 	diags = resp.State.Set(ctx, plan)
 	resp.Diagnostics.Append(diags...)
-	if resp.Diagnostics.HasError() {
-		return
-	}
 }
 
-// Delete deletes the resource and removes the Terraform state on success
+// Read refreshes the Terraform state with the latest data.
+func (r *environmentVariableResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+	// Delegate to the base Read method
+	r.base.Read(ctx, req, resp)
+}
+
+// Delete deletes the resource and removes the Terraform state on success.
 func (r *environmentVariableResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	// Retrieve values from state
-	var state environmentVariableResourceModel
-	diags := req.State.Get(ctx, &state)
-	resp.Diagnostics.Append(diags...)
-	if resp.Diagnostics.HasError() {
-		return
-	}
-
-	// Delete the environment variable
-	err := r.client.DeleteEnvironmentVariable(
-		state.EnvironmentID.ValueString(),
-		state.Name.ValueString(),
-	)
-	if err != nil {
-		resp.Diagnostics.AddError(
-			"Error deleting environment variable",
-			"Could not delete environment variable, unexpected error: "+err.Error(),
-		)
-		return
-	}
+	// Delegate to the base Delete method
+	r.base.Delete(ctx, req, resp)
 }
 
-// ImportState imports an existing environment variable into Terraform state
+// ImportState imports an existing environment variable into Terraform state.
 func (r *environmentVariableResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	// Expected format: environment_id:name (consistent with Create method)
+	// Expected format: environment_id:target:name (target is optional)
 	idParts := strings.Split(req.ID, ":")
-	if len(idParts) != 2 || idParts[0] == "" || idParts[1] == "" {
+	if len(idParts) < 2 || idParts[0] == "" || idParts[len(idParts)-1] == "" {
 		resp.Diagnostics.AddError(
 			"Invalid import ID format",
-			"Expected format: environment_id:name",
+			"Expected format: environment_id:target:name (target is optional)",
 		)
 		return
 	}
 
 	environmentID := idParts[0]
-	variableName := idParts[1]
+	variableName := idParts[len(idParts)-1]
+	target := ""
+	if len(idParts) == 3 {
+		target = idParts[1]
+	}
 
-	// Generate composite ID: environment_id:name
-	compositeID := fmt.Sprintf("%s:%s", environmentID, variableName)
+	// Generate composite ID: environment_id:target:name
+	compositeID := fmt.Sprintf("%s:%s:%s", environmentID, target, variableName)
 
 	// Set the composite ID and individual attributes
 	var state environmentVariableResourceModel
 	state.ID = types.StringValue(compositeID)
 	state.EnvironmentID = types.StringValue(environmentID)
 	state.Name = types.StringValue(variableName)
+	state.Target = types.StringValue(target)
 
 	// Fetch the variable value from the API to ensure it exists
-	variables, err := r.client.GetEnvironmentVariables(environmentID)
+	variables, err := r.base.client.GetEnvironmentVariables(environmentID)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error reading environment variables during import",
@@ -260,12 +162,30 @@ func (r *environmentVariableResource) ImportState(ctx context.Context, req resou
 		return
 	}
 
-	if _, exists := variables[variableName]; !exists {
+	// Find our specific variable
+	var foundVariable *apiclient.EnvironmentVariable
+	for _, variable := range variables {
+		if variable.Name == variableName && (target == "" || variable.Target == target) {
+			foundVariable = &variable
+			break
+		}
+	}
+
+	if foundVariable == nil {
 		resp.Diagnostics.AddError(
 			"Environment variable not found",
 			fmt.Sprintf("Environment variable '%s' not found in environment '%s'", variableName, environmentID),
 		)
 		return
+	}
+
+	// Set the value based on whether it's a secret
+	if foundVariable.Secret {
+		state.SecretValue = types.StringValue(foundVariable.Value)
+		state.Value = types.StringNull()
+	} else {
+		state.Value = types.StringValue(foundVariable.Value)
+		state.SecretValue = types.StringNull()
 	}
 
 	// Set the state

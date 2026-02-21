@@ -7,12 +7,21 @@ import (
 
 // EnvironmentVariable represents an environment variable from the API
 type EnvironmentVariable struct {
-	Name  string `json:"name"`
-	Value string `json:"value"`
+	Name   string `json:"name"`
+	Value  string `json:"value"`
+	Secret bool   `json:"secret"`
+	Target string `json:"target,omitempty"`
+}
+
+// EnvironmentVariableUpsertRequestBodyDto represents the request body for setting environment variables
+type EnvironmentVariableUpsertRequestBodyDto struct {
+	Secret bool    `json:"secret"`
+	Value  string  `json:"value"`
+	Target *string `json:"target,omitempty"`
 }
 
 // GetEnvironmentVariables retrieves variables for an environment
-func (c *Client) GetEnvironmentVariables(environmentID string) (map[string]string, error) {
+func (c *Client) GetEnvironmentVariables(environmentID string) ([]EnvironmentVariable, error) {
 	// Create request options
 	opts := RequestOptions{
 		Method: "GET",
@@ -34,22 +43,16 @@ func (c *Client) GetEnvironmentVariables(environmentID string) (map[string]strin
 		return nil, fmt.Errorf("failed to decode environment variables: %v", err)
 	}
 
-	// Convert the array to a map
-	variablesMap := make(map[string]string)
-	for _, variable := range variables {
-		variablesMap[variable.Name] = variable.Value
-	}
-
-	return variablesMap, nil
+	return variables, nil
 }
 
 // SetEnvironmentVariable sets a variable for an environment
-func (c *Client) SetEnvironmentVariable(environmentID string, variableName string, variableValue string) error {
+func (c *Client) SetEnvironmentVariable(environmentID string, variableName string, requestBody EnvironmentVariableUpsertRequestBodyDto) error {
 	// Create request options
 	opts := RequestOptions{
 		Method: "POST",
 		Path:   fmt.Sprintf("/api/environments/v1/%s/variables/%s", environmentID, variableName),
-		Body:   map[string]string{"value": variableValue},
+		Body:   requestBody,
 	}
 
 	// Make the request
