@@ -23,7 +23,7 @@ type ClientInterface interface {
 	DeleteClient(clientID string) error
 	ObtainEditingSecret(environmentID string) (string, error)
 	GetEnvironmentVariables(projectID string, environmentID string) (map[string]string, error)
-	SetEnvironmentVariable(projectID string, environmentID string, variableName string, variableValue string) error
+	SetEnvironmentVariable(projectID string, environmentID string, variableName string, requestBody EnvironmentVariableUpsertRequestBodyDto) error
 	DeleteEnvironmentVariable(projectID string, environmentID string, variableName string) error
 }
 
@@ -320,7 +320,7 @@ func (m *MockClient) GetEnvironmentVariables(projectID string, environmentID str
 	return map[string]string{}, nil
 }
 
-func (m *MockClient) SetEnvironmentVariable(projectID string, environmentID string, variableName string, variableValue string) error {
+func (m *MockClient) SetEnvironmentVariable(projectID string, environmentID string, variableName string, requestBody EnvironmentVariableUpsertRequestBodyDto) error {
 	if m.ShouldFail && m.FailOnMethod == "SetEnvironmentVariable" {
 		return fmt.Errorf("mock set environment variable failed")
 	}
@@ -328,7 +328,7 @@ func (m *MockClient) SetEnvironmentVariable(projectID string, environmentID stri
 	if _, ok := m.EnvironmentVariables[key]; !ok {
 		m.EnvironmentVariables[key] = map[string]string{}
 	}
-	m.EnvironmentVariables[key][variableName] = variableValue
+	m.EnvironmentVariables[key][variableName] = requestBody.Value
 	return nil
 }
 

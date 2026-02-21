@@ -10,6 +10,7 @@ data "sitecoreai_environment" "default" {
 resource "sitecoreai_environment_variable" "env" {
   environment_id = data.sitecoreai_environment.default.id
 
-  name  = "SXA_ENVIRONMENT_NAME"
-  value = "dev"
+  name   = "SXA_ENVIRONMENT_NAME"
+  value  = "dev"
+  target = "CM"
 }

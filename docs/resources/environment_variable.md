@@ -26,8 +26,9 @@ data "sitecoreai_environment" "default" {
 resource "sitecoreai_environment_variable" "env" {
   environment_id = data.sitecoreai_environment.default.id
 
-  name  = "SXA_ENVIRONMENT_NAME"
-  value = "dev"
+  name   = "SXA_ENVIRONMENT_NAME"
+  value  = "dev"
+  target = "CM"
 }
 ```
 
@@ -38,7 +39,12 @@ resource "sitecoreai_environment_variable" "env" {
 
 - `environment_id` (String) The ID of the environment to which the variable belongs
 - `name` (String) The name of the environment variable
-- `value` (String) The value of the environment variable
+
+### Optional
+
+- `secret_value` (String, Sensitive) The sensitive value of the environment variable
+- `target` (String) The target for the environment variable (CM, EH, or custom editing host name). Leave empty for all targets.
+- `value` (String) The non-sensitive value of the environment variable
 
 ### Read-Only
 
@@ -62,6 +68,6 @@ resource "sitecoreai_environment_variable" "env" {
 The [`terraform import` command](https://developer.hashicorp.com/terraform/cli/commands/import) can be used, for example:
 
 ```shell
-# Import using the format `<environment_id>:<variable_name>`
-terraform import sitecoreai_environment_variable.example "environment-12345:SXA_ENVIRONMENT_NAME"
+# Import using the format `<environment_id>:target:<variable_name>`
+terraform import sitecoreai_environment_variable.example "environment-12345:CM:SXA_ENVIRONMENT_NAME"
 ```

@@ -36,7 +36,9 @@ type environmentVariableResourceModel struct {
 	ID            types.String `tfsdk:"id"`
 	Name          types.String `tfsdk:"name"`
 	Value         types.String `tfsdk:"value"`
+	SecretValue   types.String `tfsdk:"secret_value"`
 	EnvironmentID types.String `tfsdk:"environment_id"`
+	Target        types.String `tfsdk:"target"`
 }
 
 // Metadata returns the resource type name
@@ -71,11 +73,21 @@ func (r *environmentVariableResource) Schema(_ context.Context, _ resource.Schem
 				},
 			},
 			"value": schema.StringAttribute{
-				Description: "The value of the environment variable",
-				Required:    true,
+				Description: "The non-sensitive value of the environment variable",
+				Optional:    true,
 				Sensitive:   false,
 			},
+			"secret_value": schema.StringAttribute{
+				Description: "The sensitive value of the environment variable",
+				Optional:    true,
+				Sensitive:   true,
+			},
+			"target": schema.StringAttribute{
+				Description: "The target for the environment variable (CM, EH, or custom editing host name). Leave empty for all targets.",
+				Optional:    true,
+			},
 		},
+		Blocks: map[string]schema.Block{}, // Add validation for mutual exclusivity of value/secret_value
 	}
 }
 
@@ -98,11 +110,39 @@ func (r *environmentVariableResource) Create(ctx context.Context, req resource.C
 		return
 	}
 
+	// Validate mutual exclusivity of value and secret_value
+	if !plan.Value.IsNull() && !plan.SecretValue.IsNull() {
+		resp.Diagnostics.AddError(
+			"Invalid Attribute Combination",
+			"Either 'value' or 'secret_value' must be set, but not both.",
+		)
+		return
+	}
+	if plan.Value.IsNull() && plan.SecretValue.IsNull() {
+		resp.Diagnostics.AddError(
+			"Missing Required Attribute",
+			"Either 'value' or 'secret_value' must be set.",
+		)
+		return
+	}
+
+	// Prepare the request body
+	requestBody := apiclient.EnvironmentVariableUpsertRequestBodyDto{
+		Value:  plan.Value.ValueString(),
+		Secret: !plan.SecretValue.IsNull(),
+	}
+
+	// Set target if provided
+	target := plan.Target.ValueString()
+	if target != "" {
+		requestBody.Target = &target
+	}
+
 	// Set the environment variable using the API
 	err := r.client.SetEnvironmentVariable(
 		plan.EnvironmentID.ValueString(),
 		plan.Name.ValueString(),
-		plan.Value.ValueString(),
+		requestBody,
 	)
 	if err != nil {
 		resp.Diagnostics.AddError(
@@ -112,13 +152,13 @@ func (r *environmentVariableResource) Create(ctx context.Context, req resource.C
 		return
 	}
 
-	// Generate composite ID: project_id:environment_id:name
-	compositeID := fmt.Sprintf("%s:%s",
-		plan.EnvironmentID.ValueString(),
-		plan.Name.ValueString(),
-	)
-
-	// Set the composite ID and other attributes
+	// Generate composite ID: environment_id:target:name
+	var compositeID string
+	if target == "" {
+		compositeID = fmt.Sprintf("%s::%s", plan.EnvironmentID.ValueString(), plan.Name.ValueString())
+	} else {
+		compositeID = fmt.Sprintf("%s:%s:%s", plan.EnvironmentID.ValueString(), target, plan.Name.ValueString())
+	}
 	plan.ID = types.StringValue(compositeID)
 
 	// Set state to fully populated data
@@ -151,16 +191,29 @@ func (r *environmentVariableResource) Read(ctx context.Context, req resource.Rea
 		return
 	}
 
-	// Check if our specific variable exists
-	variableValue, exists := variables[state.Name.ValueString()]
-	if !exists {
+	// Find our specific variable
+	var foundVariable *apiclient.EnvironmentVariable
+	for _, variable := range variables {
+		if variable.Name == state.Name.ValueString() {
+			foundVariable = &variable
+			break
+		}
+	}
+
+	if foundVariable == nil {
 		// Variable was deleted outside of Terraform
 		resp.State.RemoveResource(ctx)
 		return
 	}
 
-	// Update the value from the API response
-	state.Value = types.StringValue(variableValue)
+	// Update the state based on whether the variable is a secret
+	if foundVariable.Secret {
+		state.SecretValue = types.StringValue(foundVariable.Value)
+		state.Value = types.StringNull()
+	} else {
+		state.Value = types.StringValue(foundVariable.Value)
+		state.SecretValue = types.StringNull()
+	}
 
 	// Set refreshed state
 	diags = resp.State.Set(ctx, &state)
@@ -180,11 +233,39 @@ func (r *environmentVariableResource) Update(ctx context.Context, req resource.U
 		return
 	}
 
+	// Validate mutual exclusivity of value and secret_value
+	if !plan.Value.IsNull() && !plan.SecretValue.IsNull() {
+		resp.Diagnostics.AddError(
+			"Invalid Attribute Combination",
+			"Either 'value' or 'secret_value' must be set, but not both.",
+		)
+		return
+	}
+	if plan.Value.IsNull() && plan.SecretValue.IsNull() {
+		resp.Diagnostics.AddError(
+			"Missing Required Attribute",
+			"Either 'value' or 'secret_value' must be set.",
+		)
+		return
+	}
+
+	// Prepare the request body
+	requestBody := apiclient.EnvironmentVariableUpsertRequestBodyDto{
+		Value:  plan.Value.ValueString(),
+		Secret: !plan.SecretValue.IsNull(),
+	}
+
+	// Set target if provided
+	target := plan.Target.ValueString()
+	if target != "" {
+		requestBody.Target = &target
+	}
+
 	// Update the environment variable using the API
 	err := r.client.SetEnvironmentVariable(
 		plan.EnvironmentID.ValueString(),
 		plan.Name.ValueString(),
-		plan.Value.ValueString(),
+		requestBody,
 	)
 	if err != nil {
 		resp.Diagnostics.AddError(
@@ -228,27 +309,37 @@ func (r *environmentVariableResource) Delete(ctx context.Context, req resource.D
 
 // ImportState imports an existing environment variable into Terraform state
 func (r *environmentVariableResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	// Expected format: environment_id:name (consistent with Create method)
+	// Expected format: environment_id:target:name (consistent with Create method)
 	idParts := strings.Split(req.ID, ":")
-	if len(idParts) != 2 || idParts[0] == "" || idParts[1] == "" {
+	if len(idParts) < 2 || idParts[0] == "" || idParts[len(idParts)-1] == "" {
 		resp.Diagnostics.AddError(
 			"Invalid import ID format",
-			"Expected format: environment_id:name",
+			"Expected format: environment_id:target:name (target is optional)",
 		)
 		return
 	}
 
 	environmentID := idParts[0]
-	variableName := idParts[1]
+	variableName := idParts[len(idParts)-1]
+	target := ""
+	if len(idParts) == 3 {
+		target = idParts[1]
+	}
 
-	// Generate composite ID: environment_id:name
-	compositeID := fmt.Sprintf("%s:%s", environmentID, variableName)
+	// Generate composite ID: environment_id:target:name
+	var compositeID string
+	if target == "" {
+		compositeID = fmt.Sprintf("%s::%s", environmentID, variableName)
+	} else {
+		compositeID = fmt.Sprintf("%s:%s:%s", environmentID, target, variableName)
+	}
 
 	// Set the composite ID and individual attributes
 	var state environmentVariableResourceModel
 	state.ID = types.StringValue(compositeID)
 	state.EnvironmentID = types.StringValue(environmentID)
 	state.Name = types.StringValue(variableName)
+	state.Target = types.StringValue(target)
 
 	// Fetch the variable value from the API to ensure it exists
 	variables, err := r.client.GetEnvironmentVariables(environmentID)
@@ -260,12 +351,30 @@ func (r *environmentVariableResource) ImportState(ctx context.Context, req resou
 		return
 	}
 
-	if _, exists := variables[variableName]; !exists {
+	// Find our specific variable
+	var foundVariable *apiclient.EnvironmentVariable
+	for _, variable := range variables {
+		if variable.Name == variableName {
+			foundVariable = &variable
+			break
+		}
+	}
+
+	if foundVariable == nil {
 		resp.Diagnostics.AddError(
 			"Environment variable not found",
 			fmt.Sprintf("Environment variable '%s' not found in environment '%s'", variableName, environmentID),
 		)
 		return
+	}
+
+	// Set the value based on whether it's a secret
+	if foundVariable.Secret {
+		state.SecretValue = types.StringValue(foundVariable.Value)
+		state.Value = types.StringNull()
+	} else {
+		state.Value = types.StringValue(foundVariable.Value)
+		state.SecretValue = types.StringNull()
 	}
 
 	// Set the state
