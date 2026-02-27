@@ -215,9 +215,9 @@ func (r *ehEnvironmentResource) Create(ctx context.Context, req resource.CreateR
 	plan.LastUpdatedBy = types.StringValue(createdEnvironment.LastUpdatedBy)
 	plan.LastUpdatedAt = types.StringValue(createdEnvironment.LastUpdatedAt)
 	plan.IsDeleted = types.BoolValue(createdEnvironment.IsDeleted)
-	plan.PreviewContextId = types.StringValue(createdEnvironment.PreviewContextId)
-	plan.LiveContextId = types.StringValue(createdEnvironment.LiveContextId)
 	plan.HighAvailabilityEnabled = types.BoolValue(createdEnvironment.HighAvailabilityEnabled)
+	plan.PreviewContextId = types.StringNull()
+	plan.LiveContextId = types.StringNull()
 
 	// Set state to fully populated data
 	diags = resp.State.Set(ctx, plan)
@@ -255,6 +255,8 @@ func (r *ehEnvironmentResource) Read(ctx context.Context, req resource.ReadReque
 
 	// Overwrite items with refreshed state
 	state.Name = types.StringValue(environment.Name)
+	state.ProjectID = types.StringValue(environment.ProjectID)
+	state.CmEnvironmentId = types.StringValue(environment.EditingHostEnvironmentDetails.CmEnvironmentId)
 	state.Host = types.StringValue(environment.Host)
 	state.PlatformTenantId = types.StringValue(environment.PlatformTenantId)
 	state.PlatformTenantName = types.StringValue(environment.PlatformTenantName)
@@ -264,9 +266,9 @@ func (r *ehEnvironmentResource) Read(ctx context.Context, req resource.ReadReque
 	state.LastUpdatedBy = types.StringValue(environment.LastUpdatedBy)
 	state.LastUpdatedAt = types.StringValue(environment.LastUpdatedAt)
 	state.IsDeleted = types.BoolValue(environment.IsDeleted)
-	state.PreviewContextId = types.StringValue(environment.PreviewContextId)
-	state.LiveContextId = types.StringValue(environment.LiveContextId)
 	state.HighAvailabilityEnabled = types.BoolValue(environment.HighAvailabilityEnabled)
+	state.PreviewContextId = types.StringNull()
+	state.LiveContextId = types.StringNull()
 
 	// Set refreshed state
 	diags = resp.State.Set(ctx, &state)
@@ -331,9 +333,9 @@ func (r *ehEnvironmentResource) Update(ctx context.Context, req resource.UpdateR
 	plan.LastUpdatedBy = types.StringValue(updatedEnvironment.LastUpdatedBy)
 	plan.LastUpdatedAt = types.StringValue(updatedEnvironment.LastUpdatedAt)
 	plan.IsDeleted = types.BoolValue(updatedEnvironment.IsDeleted)
-	plan.PreviewContextId = types.StringValue(updatedEnvironment.PreviewContextId)
-	plan.LiveContextId = types.StringValue(updatedEnvironment.LiveContextId)
 	plan.HighAvailabilityEnabled = types.BoolValue(updatedEnvironment.HighAvailabilityEnabled)
+	plan.PreviewContextId = types.StringNull()
+	plan.LiveContextId = types.StringNull()
 
 	// Set state to fully populated data
 	diags = resp.State.Set(ctx, plan)
@@ -367,6 +369,6 @@ func (r *ehEnvironmentResource) Delete(ctx context.Context, req resource.DeleteR
 // ImportState imports an existing EH environment into Terraform state
 func (r *ehEnvironmentResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	// Retrieve import ID and save to id attribute
-	// Expected format: project_id,environment_id
+	// Expected format: environment_id
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 }

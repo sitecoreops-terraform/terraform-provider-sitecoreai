@@ -228,10 +228,12 @@ func (r *environmentResource) Read(ctx context.Context, req resource.ReadRequest
 
 	// Overwrite items with refreshed state
 	state.Name = types.StringValue(environment.Name)
+	state.ProjectID = types.StringValue(environment.ProjectID)
 	state.Host = types.StringValue(environment.Host)
 	state.PlatformTenantId = types.StringValue(environment.PlatformTenantId)
 	state.PlatformTenantName = types.StringValue(environment.PlatformTenantName)
 	state.TenantType = types.StringValue(environment.TenantType)
+	state.IsProd = types.BoolValue(environment.TenantType == "prod")
 	state.CreatedAt = types.StringValue(environment.CreatedAt)
 	state.CreatedBy = types.StringValue(environment.CreatedBy)
 	state.LastUpdatedBy = types.StringValue(environment.LastUpdatedBy)
@@ -345,6 +347,6 @@ func (r *environmentResource) Delete(ctx context.Context, req resource.DeleteReq
 // ImportState imports an existing environment into Terraform state
 func (r *environmentResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	// Retrieve import ID and save to id attribute
-	// Expected format: project_id,environment_id
+	// Expected format: environment_id
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 }
