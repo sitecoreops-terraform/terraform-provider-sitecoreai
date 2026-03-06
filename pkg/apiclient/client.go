@@ -23,6 +23,17 @@ type Client struct {
 	HTTPClient   *http.Client
 }
 
+// ErrorResponse represents the structure of error responses from the API
+type ErrorResponse struct {
+	Type     string              `json:"type,omitempty"`
+	Title    string              `json:"title,omitempty"`
+	Status   int                 `json:"status,omitempty"`
+	Errors   map[string][]string `json:"errors,omitempty"`
+	TraceID  string              `json:"traceId,omitempty"`
+	Detail   string              `json:"detail,omitempty"`
+	Instance string              `json:"instance,omitempty"`
+}
+
 // NewClientFromCLI attempts to create a client using CLI authentication
 func NewClientFromCLI(configPath string) (*Client, error) {
 
@@ -158,7 +169,31 @@ func (c *Client) doRequest(opts RequestOptions) (*http.Response, error) {
 	}
 
 	if resp.StatusCode >= 400 {
-		return resp, fmt.Errorf("failure as status code is %d", resp.StatusCode)
+		// Try to parse the error response body for more details
+		defer func() { _ = resp.Body.Close() }()
+
+		var errorResponse ErrorResponse
+		err = json.NewDecoder(resp.Body).Decode(&errorResponse)
+		if err != nil {
+			// If we can't parse as JSON, return the original error with status code
+			return resp, fmt.Errorf("request failed with status code %d", resp.StatusCode)
+		}
+
+		// Build a detailed error message with the parsed error details
+		var errorMsg string
+		if errorResponse.Title != "" {
+			errorMsg = fmt.Sprintf("request failed with status code %d: %s", resp.StatusCode, errorResponse.Title)
+		} else {
+			errorMsg = fmt.Sprintf("request failed with status code %d", resp.StatusCode)
+		}
+		if errorResponse.TraceID != "" {
+			errorMsg += " (Trace ID: " + errorResponse.TraceID + ")"
+		}
+		if len(errorResponse.Errors) > 0 {
+			errorMsg += ". Errors: " + fmt.Sprintf("%v", errorResponse.Errors)
+		}
+
+		return resp, fmt.Errorf("%s", errorMsg)
 	}
 
 	return resp, nil

@@ -39,13 +39,13 @@ type Environment struct {
 }
 
 type CreateEnvironmentRequest struct {
-	Name                          string                        `json:"name"`
-	TenantType                    int                           `json:"tenantType,omitempty"`
-	Type                          string                        `json:"type,omitempty"`
-	RepositoryBranch              string                        `json:"repositoryBranch,omitempty"`
-	SitecoreMajorVersion          int                           `json:"sitecoreMajorVersion,omitempty"`
-	DeployOnCommit                bool                          `json:"deployOnCommit,omitempty"`
-	EditingHostEnvironmentDetails EditingHostEnvironmentDetails `json:"editingHostEnvironmentDetails,omitempty"`
+	Name                          string                         `json:"name"`
+	TenantType                    int                            `json:"tenantType,omitempty"`
+	Type                          string                         `json:"type,omitempty"`
+	RepositoryBranch              string                         `json:"repositoryBranch,omitempty"`
+	SitecoreMajorVersion          int                            `json:"sitecoreMajorVersion,omitempty"`
+	DeployOnCommit                bool                           `json:"deployOnCommit,omitempty"`
+	EditingHostEnvironmentDetails *EditingHostEnvironmentDetails `json:"editingHostEnvironmentDetails,omitempty"`
 }
 
 type EditingHostEnvironmentDetails struct {
@@ -85,7 +85,7 @@ func (c *Client) CreateEnvironment(projectID string, name string, isProd bool, e
 	}
 
 	if cmEnvironmentId != "" {
-		body.EditingHostEnvironmentDetails = EditingHostEnvironmentDetails{
+		body.EditingHostEnvironmentDetails = &EditingHostEnvironmentDetails{
 			CmEnvironmentId: cmEnvironmentId,
 		}
 	}

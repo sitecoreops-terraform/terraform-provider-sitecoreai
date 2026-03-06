@@ -1,72 +1,102 @@
 package apiclient
 
 import (
-	"os"
+	"fmt"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 )
 
-func TestObtainEditingSecret(t *testing.T) {
-	// Get client credentials from environment variables
-	clientID := os.Getenv("SITECOREAI_CLIENT_ID")
-	clientSecret := os.Getenv("SITECOREAI_CLIENT_SECRET")
-	if clientID == "" || clientSecret == "" {
-		t.Skip("SITECOREAI_CLIENT_ID and SITECOREAI_CLIENT_SECRET environment variables must be set to run this test")
-	}
+func TestObtainEditingSecret_MockedResponse(t *testing.T) {
+	t.Run("Successful response should return secret", func(t *testing.T) {
+		// Create a mock HTTP server that returns success
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+			_, _ = fmt.Fprint(w, "test-secret-key-12345")
+		}))
+		defer server.Close()
 
-	// Create new client
-	client, err := NewClientFromEnv()
-	if err != nil {
-		t.Errorf("Client instatiation failed: %v", err)
-	}
+		// Create a client that uses the mock server
+		client := &Client{
+			BaseURL:    server.URL,
+			HTTPClient: server.Client(),
+			Token:      "test-token",
+		}
 
-	// Authenticate
-	err = client.Authenticate()
-	if err != nil {
-		t.Fatalf("Authentication failed: %v", err)
-	}
+		// Call ObtainEditingSecret
+		secret, err := client.ObtainEditingSecret("test-env-id")
+		if err != nil {
+			t.Fatalf("ObtainEditingSecret failed: %v", err)
+		}
 
-	// Test GetProjects method
-	projects, err := client.GetProjects()
-	if err != nil {
-		t.Errorf("GetProjects failed: %v", err)
-	}
+		// Verify we got the secret
+		if secret != "test-secret-key-12345" {
+			t.Errorf("Expected 'test-secret-key-12345', got '%s'", secret)
+		}
+	})
 
-	// Verify we got some projects
-	if len(projects) == 0 {
-		t.Error("No projects returned")
-	}
+	t.Run("Not Found errour should return empty string as it is awaiting deployment", func(t *testing.T) {
+		// Create a mock HTTP server that returns 404 with the expected JSON format
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusNotFound)
+			w.Header().Set("Content-Type", "application/problem+json; charset=utf-8")
+			errorResponse := `{
+				"type":"https://tools.ietf.org/html/rfc9110#section-15.5.5",
+				"title":"Not Found",
+				"status":404,
+				"traceId":"00-d472dcd68fbe5895cd474e70312e2110-3155286964e7ddd8-01"
+			}`
+			_, _ = fmt.Fprint(w, errorResponse)
+		}))
+		defer server.Close()
 
-	// Use the first project for testing
-	project := projects[0]
-	t.Logf("Testing with project: %s (ID: %s)", project.Name, project.ID)
+		// Create a client that uses the mock server
+		client := &Client{
+			BaseURL:    server.URL,
+			HTTPClient: server.Client(),
+			Token:      "test-token",
+		}
 
-	// Get environments for the project
-	environments, err := client.GetProjectEnvironments(project.ID)
-	if err != nil {
-		t.Errorf("GetProjectEnvironments failed: %v", err)
-	}
+		// Call ObtainEditingSecret
+		secret, err := client.ObtainEditingSecret("test-env-id")
+		if err != nil {
+			t.Fatalf("ObtainEditingSecret failed: %v", err)
+		}
 
-	// Verify we got some environments
-	if len(environments) == 0 {
-		t.Skip("No environments available to test obtain-editing-secret")
-	}
+		// Verify we got an empty string for 404
+		if secret != "" {
+			t.Errorf("Expected empty string for 404, got '%s'", secret)
+		}
+	})
 
-	// Use the first environment for testing
-	environment := environments[0]
-	t.Logf("Testing with environment: %s (ID: %s)", environment.Name, environment.ID)
+	t.Run("Other errors should return error", func(t *testing.T) {
+		// Create a mock HTTP server that returns 500 error
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Header().Set("Content-Type", "application/json")
+			errorResponse := `{
+				"type":"https://tools.ietf.org/html/rfc9110#section-15.5.1",
+				"title":"Internal Server Error",
+				"status":500,
+				"traceId":"00-d472dcd68fbe5895cd474e70312e2110-3155286964e7ddd8-01"
+			}`
+			_, _ = fmt.Fprint(w, errorResponse)
+		}))
+		defer server.Close()
 
-	// Test ObtainEditingSecret method
-	secret, err := client.ObtainEditingSecret(environment.ID)
-	if err != nil {
-		t.Errorf("ObtainEditingSecret failed: %v", err)
-	}
+		// Create a client that uses the mock server
+		client := &Client{
+			BaseURL:    server.URL,
+			HTTPClient: server.Client(),
+			Token:      "test-token",
+		}
 
-	// Verify we got a secret (empty string is acceptable for 404 during initialization)
-	if secret == "" {
-		t.Log("Obtained editing secret is empty - this is acceptable as it will not be available until there have been a deployment.")
-	} else {
-		t.Logf("Obtained editing secret successfully")
-	}
+		// Call ObtainEditingSecret
+		_, err := client.ObtainEditingSecret("test-env-id")
 
-	t.Logf("ObtainEditingSecret test passed successfully. Secret : %s", secret)
+		// Should return an error for 500
+		if err == nil {
+			t.Error("Expected error for 500 status, got nil")
+		}
+	})
 }

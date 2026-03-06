@@ -18,7 +18,7 @@ func (c *Client) ObtainEditingSecret(environmentID string) (string, error) {
 	resp, err := c.doRequest(opts)
 	if err != nil {
 		// Check if the error is due to a 404 status code
-		if strings.Contains(err.Error(), "status code is 404") {
+		if strings.Contains(err.Error(), "request failed with status code 404: Not Found") {
 			// Return empty string for 404 as the editing secret will not be available until there have been a deployment.
 			return "", nil
 		}

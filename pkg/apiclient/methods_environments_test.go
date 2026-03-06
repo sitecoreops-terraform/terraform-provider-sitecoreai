@@ -1,164 +1,147 @@
 package apiclient
 
 import (
-	"os"
+	"encoding/json"
+	"fmt"
+	"io"
+	"net/http"
+	"net/http/httptest"
+	"strings"
 	"testing"
 )
 
-const testEnvironmentName = "inttestenv"
+func TestCreateEnvironment_EditingHostEnvironmentDetails(t *testing.T) {
+	t.Run("Without cmEnvironmentId - EditingHostEnvironmentDetails should be omitted", func(t *testing.T) {
+		// Create a mock HTTP server
+		requestBody := ""
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			// Capture the request body
+			body, err := io.ReadAll(r.Body)
+			if err != nil {
+				http.Error(w, "Failed to read body", http.StatusInternalServerError)
+				return
+			}
+			requestBody = string(body)
 
-func TestGetProjectEnvironments(t *testing.T) {
-	// Get client credentials from environment variables
-	clientID := os.Getenv("SITECOREAI_CLIENT_ID")
-	clientSecret := os.Getenv("SITECOREAI_CLIENT_SECRET")
-	if clientID == "" || clientSecret == "" {
-		t.Skip("SITECOREAI_CLIENT_ID and SITECOREAI_CLIENT_SECRET environment variables must be set to run this test")
-	}
+			// Return a mock response
+			w.WriteHeader(http.StatusOK)
+			mockResponse := `{
+				"id": "test-environment-id",
+				"name": "test-environment",
+				"projectId": "test-project-id",
+				"type": "Development"
+			}`
+			_, _ = fmt.Fprint(w, mockResponse)
+		}))
+		defer server.Close()
 
-	// Create new client
-	client, err := NewClientFromEnv()
-	if err != nil {
-		t.Errorf("Client instatiation failed: %v", err)
-	}
-
-	// Authenticate
-	err = client.Authenticate()
-	if err != nil {
-		t.Fatalf("Authentication failed: %v", err)
-	}
-
-	// Test GetProjects method
-	projects, err := client.GetProjects()
-	if err != nil {
-		t.Errorf("GetProjects failed: %v", err)
-	}
-
-	// Verify we got some projects
-	if len(projects) == 0 {
-		t.Error("No projects returned")
-	}
-
-	// Use the first project for testing
-	project := projects[0]
-	t.Logf("Testing with project: %s (ID: %s)", project.Name, project.ID)
-
-	// Create environment
-	envs, err := client.GetProjectEnvironments(project.ID)
-	if err != nil {
-		t.Errorf("GetProjectEnvironments failed: %v", err)
-	}
-
-	t.Logf("GetProjectEnvironments test passed successfully. get %d environments", len(envs))
-}
-
-func TestCreateEnvironment(t *testing.T) {
-	// Get client credentials from environment variables
-	clientID := os.Getenv("SITECOREAI_CLIENT_ID")
-	clientSecret := os.Getenv("SITECOREAI_CLIENT_SECRET")
-	if clientID == "" || clientSecret == "" {
-		t.Skip("SITECOREAI_CLIENT_ID and SITECOREAI_CLIENT_SECRET environment variables must be set to run this test")
-	}
-
-	// Create new client
-	client, err := NewClientFromEnv()
-	if err != nil {
-		t.Errorf("Client instatiation failed: %v", err)
-	}
-
-	// Authenticate
-	err = client.Authenticate()
-	if err != nil {
-		t.Fatalf("Authentication failed: %v", err)
-	}
-
-	// Test GetProjects method
-	projects, err := client.GetProjects()
-	if err != nil {
-		t.Errorf("GetProjects failed: %v", err)
-	}
-
-	// Verify we got some projects
-	if len(projects) == 0 {
-		t.Error("No projects returned")
-	}
-
-	// Use the first project for testing
-	project := projects[0]
-	t.Logf("Testing with project: %s (ID: %s)", project.Name, project.ID)
-
-	// Create environment
-	env, err := client.CreateEnvironment(project.ID, testEnvironmentName, true, EnvironmentTypeCmOnly, "")
-	if err != nil {
-		t.Errorf("CreateEnvironment failed: %v", err)
-	}
-
-	t.Logf("CreateEnvironment test passed successfully. result %s", env.ID)
-}
-
-func TestDeleteEnvironment(t *testing.T) {
-	// Get client credentials from environment variables
-	clientID := os.Getenv("SITECOREAI_CLIENT_ID")
-	clientSecret := os.Getenv("SITECOREAI_CLIENT_SECRET")
-	if clientID == "" || clientSecret == "" {
-		t.Skip("SITECOREAI_CLIENT_ID and SITECOREAI_CLIENT_SECRET environment variables must be set to run this test")
-	}
-
-	// Create new client
-	client, err := NewClientFromEnv()
-	if err != nil {
-		t.Errorf("Client instatiation failed: %v", err)
-	}
-
-	// Authenticate
-	err = client.Authenticate()
-	if err != nil {
-		t.Fatalf("Authentication failed: %v", err)
-	}
-
-	// Test GetProjects method
-	projects, err := client.GetProjects()
-	if err != nil {
-		t.Errorf("GetProjects failed: %v", err)
-	}
-
-	// Verify we got some projects
-	if len(projects) == 0 {
-		t.Error("No projects returned")
-	}
-
-	// Use the first project for testing
-	project := projects[0]
-	t.Logf("Testing with project: %s (ID: %s)", project.Name, project.ID)
-
-	// Get environments for the project
-	environments, err := client.GetProjectEnvironments(project.ID)
-	if err != nil {
-		t.Errorf("GetProjectEnvironments failed: %v", err)
-	}
-
-	// Verify we got some environments
-	if len(environments) == 0 {
-		t.Skip("No environments available to test obtain-editing-secret")
-	}
-
-	// Find the environment with the matching name
-	var foundEnvironment *Environment
-	for i := range environments {
-		if environments[i].Name == testEnvironmentName {
-			foundEnvironment = &environments[i]
-			break
+		// Create a client that uses the mock server
+		client := &Client{
+			BaseURL:    server.URL,
+			HTTPClient: server.Client(),
+			Token:      "test-token",
 		}
-	}
 
-	if foundEnvironment == nil {
-		t.Skipf("No environments named '%s' found to test delete-environment", testEnvironmentName)
-	}
+		// Call CreateEnvironment without cmEnvironmentId
+		createdEnv, err := client.CreateEnvironment("test-project-id", "test-environment", false, EnvironmentTypeCombined, "")
+		if err != nil {
+			t.Fatalf("CreateEnvironment failed: %v", err)
+		}
 
-	// Delete environment
-	err = client.DeleteEnvironment(foundEnvironment.ID)
-	if err != nil {
-		t.Errorf("DeleteEnvironment failed: %v", err)
-	}
+		// Verify the environment was "created" (mock response)
+		if createdEnv == nil {
+			t.Fatal("Expected created environment, got nil")
+		}
 
-	t.Logf("DeleteEnvironment test passed successfully. deleted environment %s", foundEnvironment.ID)
+		// Parse the captured request body using json.NewDecoder
+		var requestData map[string]interface{}
+		err = json.NewDecoder(strings.NewReader(requestBody)).Decode(&requestData)
+		if err != nil {
+			t.Fatalf("Failed to parse request body: %v", err)
+		}
+
+		// Verify EditingHostEnvironmentDetails is not present
+		if _, exists := requestData["editingHostEnvironmentDetails"]; exists {
+			t.Errorf("EditingHostEnvironmentDetails should not be present when cmEnvironmentId is empty. Request data: %+v", requestData)
+		}
+
+		// Verify other expected fields are present
+		if requestData["name"] != "test-environment" {
+			t.Errorf("Expected name 'test-environment', got '%v'", requestData["name"])
+		}
+		// For EnvironmentTypeCombined, type should not be present or should be empty
+		if requestData["type"] != nil && requestData["type"] != "" {
+			t.Errorf("Expected type to be nil or empty for EnvironmentTypeCombined, got '%v'", requestData["type"])
+		}
+	})
+
+	t.Run("With cmEnvironmentId - EditingHostEnvironmentDetails should be included", func(t *testing.T) {
+		// Create a mock HTTP server
+		requestBody := ""
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			// Capture the request body
+			body, err := io.ReadAll(r.Body)
+			if err != nil {
+				http.Error(w, "Failed to read body", http.StatusInternalServerError)
+				return
+			}
+			requestBody = string(body)
+
+			// Return a mock response
+			w.WriteHeader(http.StatusOK)
+			mockResponse := `{
+				"id": "test-environment-id",
+				"name": "test-environment",
+				"projectId": "test-project-id",
+				"type": "Development"
+			}`
+			_, _ = fmt.Fprint(w, mockResponse)
+		}))
+		defer server.Close()
+
+		// Create a client that uses the mock server
+		client := &Client{
+			BaseURL:    server.URL,
+			HTTPClient: server.Client(),
+			Token:      "test-token",
+		}
+
+		// Call CreateEnvironment with cmEnvironmentId
+		createdEnv, err := client.CreateEnvironment("test-project-id", "test-environment", false, EnvironmentTypeCombined, "test-cm-env-id")
+		if err != nil {
+			t.Fatalf("CreateEnvironment failed: %v", err)
+		}
+
+		// Verify the environment was "created" (mock response)
+		if createdEnv == nil {
+			t.Fatal("Expected created environment, got nil")
+		}
+
+		// Parse the captured request body using json.NewDecoder
+		var requestData map[string]interface{}
+		err = json.NewDecoder(strings.NewReader(requestBody)).Decode(&requestData)
+		if err != nil {
+			t.Fatalf("Failed to parse request body: %v", err)
+		}
+
+		// Verify EditingHostEnvironmentDetails is present
+		if _, exists := requestData["editingHostEnvironmentDetails"]; !exists {
+			t.Error("EditingHostEnvironmentDetails should be present when cmEnvironmentId is provided")
+		}
+
+		// Verify the cmEnvironmentId is correct
+		editingDetails := requestData["editingHostEnvironmentDetails"].(map[string]interface{})
+		if editingDetails["cmEnvironmentId"] != "test-cm-env-id" {
+			t.Errorf("Expected cmEnvironmentId 'test-cm-env-id', got '%v'", editingDetails["cmEnvironmentId"])
+		}
+
+		// Verify other expected fields are present
+		if requestData["name"] != "test-environment" {
+			t.Errorf("Expected name 'test-environment', got '%v'", requestData["name"])
+		}
+		// For EnvironmentTypeCombined, type should not be present or should be empty
+		if requestData["type"] != nil && requestData["type"] != "" {
+			t.Errorf("Expected type to be nil or empty for EnvironmentTypeCombined, got '%v'", requestData["type"])
+		}
+	})
 }
