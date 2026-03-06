@@ -84,5 +84,5 @@ jobs:
       - run: go mod download
       - env:
           TF_ACC: "1"
-        run: go test -v -cover ./pkg/provider/
+        run: go test -v -cover ./pkg/...
         timeout-minutes: 10
