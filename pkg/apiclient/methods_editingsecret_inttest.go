@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestObtainEditingSecret(t *testing.T) {
+func TestObtainEditingSecret_RealRequest(t *testing.T) {
 	// Get client credentials from environment variables
 	clientID := os.Getenv("SITECOREAI_CLIENT_ID")
 	clientSecret := os.Getenv("SITECOREAI_CLIENT_SECRET")
