@@ -3,6 +3,7 @@ package provider
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -205,6 +206,24 @@ func (r *baseEnvironmentVariableResource) Update(ctx context.Context, req resour
 		plan.Name.ValueString(),
 		requestBody,
 	)
+
+	if err != nil && strings.Contains(err.Error(), "request failed with status code 409: Conflict") {
+		resp.Diagnostics.AddWarning(
+			"Got conflict during update but it will be handled",
+			fmt.Sprintf("Will recreate environment variable '%s' instead. The error was: %s", plan.Name.ValueString(), err.Error()),
+		)
+		r.client.DeleteEnvironmentVariable(
+			plan.EnvironmentID.ValueString(),
+			plan.Name.ValueString(),
+		)
+
+		err = r.client.SetEnvironmentVariable(
+			plan.EnvironmentID.ValueString(),
+			plan.Name.ValueString(),
+			requestBody,
+		)
+	}
+
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error updating environment variable",
