@@ -89,11 +89,18 @@ func (r *baseEnvironmentVariableResource) Create(ctx context.Context, req resour
 		return
 	}
 
-	// Prepare the request body
 	requestBody := apiclient.EnvironmentVariableUpsertRequestBodyDto{
 		Value:  plan.Value.ValueString(),
-		Secret: !plan.SecretValue.IsNull(),
+		Secret: false,
 		Target: &target,
+	}
+
+	if !plan.SecretValue.IsNull() {
+		requestBody = apiclient.EnvironmentVariableUpsertRequestBodyDto{
+			Value:  plan.SecretValue.ValueString(),
+			Secret: true,
+			Target: &target,
+		}
 	}
 
 	// Set the environment variable using the API

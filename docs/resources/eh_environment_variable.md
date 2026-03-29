@@ -30,14 +30,14 @@ resource "sitecoreai_eh_environment" "website" {
 }
 
 # Example: EH environment variable (target="EH" is implicit)
-resource "sitecore_eh_environment_variable" "non_secret" {
+resource "sitecoreai_eh_environment_variable" "non_secret" {
   environment_id = sitecoreai_eh_environment.website.id
   name           = "EH_NON_SECRET_VAR"
   value          = "hello_world" # Non-sensitive value
 }
 
 # Example: Secret EH environment variable
-resource "sitecore_eh_environment_variable" "secret" {
+resource "sitecoreai_eh_environment_variable" "secret" {
   environment_id = sitecoreai_eh_environment.website.id
   name           = "EH_SECRET_VAR"
   secret_value   = "s3cr3t_p@ssw0rd" # Sensitive value (masked in logs/state)
