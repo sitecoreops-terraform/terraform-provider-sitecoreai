@@ -213,6 +213,10 @@ func (r *baseEnvironmentVariableResource) Update(ctx context.Context, req resour
 		return
 	}
 
+	// Generate composite ID: environment_id:name
+	compositeID := fmt.Sprintf("%s:%s", plan.EnvironmentID.ValueString(), plan.Name.ValueString())
+	plan.ID = types.StringValue(compositeID)
+
 	// Set state to fully populated data
 	diags = resp.State.Set(ctx, plan)
 	resp.Diagnostics.Append(diags...)
