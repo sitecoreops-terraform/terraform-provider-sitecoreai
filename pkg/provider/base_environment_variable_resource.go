@@ -3,6 +3,7 @@ package provider
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -89,6 +90,22 @@ func (r *baseEnvironmentVariableResource) Create(ctx context.Context, req resour
 		return
 	}
 
+	// Validate that values are not empty
+	if !plan.Value.IsNull() && plan.Value.ValueString() == "" {
+		resp.Diagnostics.AddError(
+			"Invalid Attribute Value",
+			"The 'value' attribute cannot be empty.",
+		)
+		return
+	}
+	if !plan.SecretValue.IsNull() && plan.SecretValue.ValueString() == "" {
+		resp.Diagnostics.AddError(
+			"Invalid Attribute Value",
+			"The 'secret_value' attribute cannot be empty.",
+		)
+		return
+	}
+
 	requestBody := apiclient.EnvironmentVariableUpsertRequestBodyDto{
 		Value:  plan.Value.ValueString(),
 		Secret: false,
@@ -152,11 +169,35 @@ func (r *baseEnvironmentVariableResource) Update(ctx context.Context, req resour
 		return
 	}
 
+	// Validate that values are not empty
+	if !plan.Value.IsNull() && plan.Value.ValueString() == "" {
+		resp.Diagnostics.AddError(
+			"Invalid Attribute Value",
+			"The 'value' attribute cannot be empty.",
+		)
+		return
+	}
+	if !plan.SecretValue.IsNull() && plan.SecretValue.ValueString() == "" {
+		resp.Diagnostics.AddError(
+			"Invalid Attribute Value",
+			"The 'secret_value' attribute cannot be empty.",
+		)
+		return
+	}
+
 	// Prepare the request body
 	requestBody := apiclient.EnvironmentVariableUpsertRequestBodyDto{
 		Value:  plan.Value.ValueString(),
-		Secret: !plan.SecretValue.IsNull(),
+		Secret: false,
 		Target: &target,
+	}
+
+	if !plan.SecretValue.IsNull() {
+		requestBody = apiclient.EnvironmentVariableUpsertRequestBodyDto{
+			Value:  plan.SecretValue.ValueString(),
+			Secret: true,
+			Target: &target,
+		}
 	}
 
 	// Update the environment variable using the API
@@ -165,6 +206,30 @@ func (r *baseEnvironmentVariableResource) Update(ctx context.Context, req resour
 		plan.Name.ValueString(),
 		requestBody,
 	)
+
+	if err != nil && strings.Contains(err.Error(), "request failed with status code 409: Conflict") {
+		resp.Diagnostics.AddWarning(
+			"Got conflict during update but it will be handled",
+			fmt.Sprintf("Will recreate environment variable '%s' instead. The error was: %s", plan.Name.ValueString(), err.Error()),
+		)
+		err = r.client.DeleteEnvironmentVariable(
+			plan.EnvironmentID.ValueString(),
+			plan.Name.ValueString(),
+		)
+		if err != nil {
+			resp.Diagnostics.AddWarning(
+				"Got error while attempting to remove env var",
+				fmt.Sprintf("Will recreate environment variable '%s' but delete gave error: %s", plan.Name.ValueString(), err.Error()),
+			)
+		}
+
+		err = r.client.SetEnvironmentVariable(
+			plan.EnvironmentID.ValueString(),
+			plan.Name.ValueString(),
+			requestBody,
+		)
+	}
+
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error updating environment variable",
@@ -172,6 +237,10 @@ func (r *baseEnvironmentVariableResource) Update(ctx context.Context, req resour
 		)
 		return
 	}
+
+	// Generate composite ID: environment_id:name
+	compositeID := fmt.Sprintf("%s:%s", plan.EnvironmentID.ValueString(), plan.Name.ValueString())
+	plan.ID = types.StringValue(compositeID)
 
 	// Set state to fully populated data
 	diags = resp.State.Set(ctx, plan)
