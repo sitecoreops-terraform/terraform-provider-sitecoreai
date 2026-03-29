@@ -50,14 +50,12 @@ func NewMockClient() *MockClient {
 	return &MockClient{
 		Projects: []Project{
 			{
-				ID:          "project-1",
-				Name:        "Test Project 1",
-				Description: "Test Description 1",
+				ID:   "project-1",
+				Name: "Test Project 1",
 			},
 			{
-				ID:          "project-2",
-				Name:        "Test Project 2",
-				Description: "Test Description 2",
+				ID:   "project-2",
+				Name: "Test Project 2",
 			},
 		},
 		Environments: []Environment{

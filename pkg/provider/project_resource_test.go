@@ -43,10 +43,6 @@ func TestProjectResourceSchema(t *testing.T) {
 		t.Error("Expected schema to have name attribute")
 	}
 
-	if _, ok := resp.Schema.Attributes["description"]; !ok {
-		t.Error("Expected schema to have description attribute")
-	}
-
 	// Check attribute properties - simplified for now
 	// Note: A more comprehensive test would check the exact attribute properties
 	// but this requires more complex attribute type checking

@@ -43,9 +43,6 @@ func TestProjectDataSourceSchema(t *testing.T) {
 		t.Error("Expected schema to have name attribute")
 	}
 
-	if _, ok := resp.Schema.Attributes["description"]; !ok {
-		t.Error("Expected schema to have description attribute")
-	}
 }
 
 func TestProjectDataSourceConfigure(t *testing.T) {

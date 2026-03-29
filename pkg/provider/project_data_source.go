@@ -29,9 +29,8 @@ type projectDataSource struct {
 
 // projectDataSourceModel maps the data source schema data
 type projectDataSourceModel struct {
-	ID          types.String `tfsdk:"id"`
-	Name        types.String `tfsdk:"name"`
-	Description types.String `tfsdk:"description"`
+	ID   types.String `tfsdk:"id"`
+	Name types.String `tfsdk:"name"`
 }
 
 // Metadata returns the data source type name
@@ -51,10 +50,6 @@ func (d *projectDataSource) Schema(_ context.Context, _ datasource.SchemaRequest
 			"name": schema.StringAttribute{
 				Description: "The name of the project to search for",
 				Required:    true,
-			},
-			"description": schema.StringAttribute{
-				Description: "The description of the project",
-				Computed:    true,
 			},
 		},
 	}
@@ -109,7 +104,6 @@ func (d *projectDataSource) Read(ctx context.Context, req datasource.ReadRequest
 	// Map the project data to the schema
 	state.ID = types.StringValue(foundProject.ID)
 	state.Name = types.StringValue(foundProject.Name)
-	state.Description = types.StringValue(foundProject.Description)
 
 	// Set state
 	diags = resp.State.Set(ctx, &state)

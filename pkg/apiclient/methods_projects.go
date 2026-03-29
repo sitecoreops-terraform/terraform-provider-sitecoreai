@@ -8,9 +8,8 @@ import (
 // Project represents a Sitecore project
 // This struct should be updated based on the actual API response structure
 type Project struct {
-	ID          string `json:"id"`
-	Name        string `json:"name"`
-	Description string `json:"description,omitempty"`
+	ID   string `json:"id"`
+	Name string `json:"name"`
 	// Add other project fields as needed based on API specification
 }
 
