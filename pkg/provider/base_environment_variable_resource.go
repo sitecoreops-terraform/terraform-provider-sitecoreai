@@ -89,6 +89,22 @@ func (r *baseEnvironmentVariableResource) Create(ctx context.Context, req resour
 		return
 	}
 
+	// Validate that values are not empty
+	if !plan.Value.IsNull() && plan.Value.ValueString() == "" {
+		resp.Diagnostics.AddError(
+			"Invalid Attribute Value",
+			"The 'value' attribute cannot be empty.",
+		)
+		return
+	}
+	if !plan.SecretValue.IsNull() && plan.SecretValue.ValueString() == "" {
+		resp.Diagnostics.AddError(
+			"Invalid Attribute Value",
+			"The 'secret_value' attribute cannot be empty.",
+		)
+		return
+	}
+
 	requestBody := apiclient.EnvironmentVariableUpsertRequestBodyDto{
 		Value:  plan.Value.ValueString(),
 		Secret: false,
@@ -148,6 +164,22 @@ func (r *baseEnvironmentVariableResource) Update(ctx context.Context, req resour
 		resp.Diagnostics.AddError(
 			"Missing Required Attribute",
 			"Either 'value' or 'secret_value' must be set.",
+		)
+		return
+	}
+
+	// Validate that values are not empty
+	if !plan.Value.IsNull() && plan.Value.ValueString() == "" {
+		resp.Diagnostics.AddError(
+			"Invalid Attribute Value",
+			"The 'value' attribute cannot be empty.",
+		)
+		return
+	}
+	if !plan.SecretValue.IsNull() && plan.SecretValue.ValueString() == "" {
+		resp.Diagnostics.AddError(
+			"Invalid Attribute Value",
+			"The 'secret_value' attribute cannot be empty.",
 		)
 		return
 	}
