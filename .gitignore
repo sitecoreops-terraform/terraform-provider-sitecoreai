@@ -84,6 +84,7 @@ terraform.rc
 terraform-provider-sitecoreai
 examples/resources/**/provider*.tf
 examples/data-sources/**/provider*.tf
+examples/**/terraform.lock.hcl
 
 ## dotnet tool Sitecore CLI, we ignore everything
 nuget.config

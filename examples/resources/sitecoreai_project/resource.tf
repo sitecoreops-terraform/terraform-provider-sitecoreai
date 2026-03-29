@@ -1,5 +1,5 @@
 # Create a new Sitecore project
-resource "sitecore_project" "example" {
+resource "sitecoreai_project" "example" {
   name        = "XMC"
   description = "A project for managing our corporate website"
 }

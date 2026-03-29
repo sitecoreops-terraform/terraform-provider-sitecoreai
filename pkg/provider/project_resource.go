@@ -32,9 +32,8 @@ type projectResource struct {
 
 // projectResourceModel maps the resource schema data
 type projectResourceModel struct {
-	ID          types.String `tfsdk:"id"`
-	Name        types.String `tfsdk:"name"`
-	Description types.String `tfsdk:"description"`
+	ID   types.String `tfsdk:"id"`
+	Name types.String `tfsdk:"name"`
 }
 
 // Metadata returns the resource type name
@@ -57,10 +56,6 @@ func (r *projectResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 			"name": schema.StringAttribute{
 				Description: "The name of the project",
 				Required:    true,
-			},
-			"description": schema.StringAttribute{
-				Description: "The description of the project",
-				Optional:    true,
 			},
 		},
 	}
@@ -87,8 +82,7 @@ func (r *projectResource) Create(ctx context.Context, req resource.CreateRequest
 
 	// Create the project
 	project := apiclient.Project{
-		Name:        plan.Name.ValueString(),
-		Description: plan.Description.ValueString(),
+		Name: plan.Name.ValueString(),
 	}
 
 	createdProject, err := r.client.CreateProject(project)
@@ -103,7 +97,6 @@ func (r *projectResource) Create(ctx context.Context, req resource.CreateRequest
 	// Map response body to schema and populate Computed attribute values
 	plan.ID = types.StringValue(createdProject.ID)
 	plan.Name = types.StringValue(createdProject.Name)
-	plan.Description = types.StringValue(createdProject.Description)
 
 	// Set state to fully populated data
 	diags = resp.State.Set(ctx, plan)
@@ -135,7 +128,6 @@ func (r *projectResource) Read(ctx context.Context, req resource.ReadRequest, re
 
 	// Overwrite items with refreshed state
 	state.Name = types.StringValue(project.Name)
-	state.Description = types.StringValue(project.Description)
 
 	// Set refreshed state
 	diags = resp.State.Set(ctx, &state)
@@ -157,9 +149,8 @@ func (r *projectResource) Update(ctx context.Context, req resource.UpdateRequest
 
 	// Update the project
 	project := apiclient.Project{
-		ID:          plan.ID.ValueString(),
-		Name:        plan.Name.ValueString(),
-		Description: plan.Description.ValueString(),
+		ID:   plan.ID.ValueString(),
+		Name: plan.Name.ValueString(),
 	}
 
 	err := r.client.UpdateProject(plan.ID.ValueString(), project)
@@ -183,7 +174,6 @@ func (r *projectResource) Update(ctx context.Context, req resource.UpdateRequest
 
 	// Update state with refreshed values
 	plan.Name = types.StringValue(updatedProject.Name)
-	plan.Description = types.StringValue(updatedProject.Description)
 
 	// Set state to fully populated data
 	diags = resp.State.Set(ctx, plan)

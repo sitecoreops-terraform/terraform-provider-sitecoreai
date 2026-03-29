@@ -39,5 +39,4 @@ output "project_description" {
 
 ### Read-Only
 
-- `description` (String) The description of the project
 - `id` (String) The ID of the project
