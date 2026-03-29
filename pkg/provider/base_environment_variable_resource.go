@@ -212,10 +212,16 @@ func (r *baseEnvironmentVariableResource) Update(ctx context.Context, req resour
 			"Got conflict during update but it will be handled",
 			fmt.Sprintf("Will recreate environment variable '%s' instead. The error was: %s", plan.Name.ValueString(), err.Error()),
 		)
-		r.client.DeleteEnvironmentVariable(
+		err = r.client.DeleteEnvironmentVariable(
 			plan.EnvironmentID.ValueString(),
 			plan.Name.ValueString(),
 		)
+		if err != nil {
+			resp.Diagnostics.AddWarning(
+				"Got error while attempting to remove env var",
+				fmt.Sprintf("Will recreate environment variable '%s' but delete gave error: %s", plan.Name.ValueString(), err.Error()),
+			)
+		}
 
 		err = r.client.SetEnvironmentVariable(
 			plan.EnvironmentID.ValueString(),
