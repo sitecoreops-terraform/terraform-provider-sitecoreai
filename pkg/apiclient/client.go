@@ -181,10 +181,12 @@ func (c *Client) doRequest(opts RequestOptions) (*http.Response, error) {
 
 		// Build a detailed error message with the parsed error details
 		var errorMsg string
+		errorMsg = fmt.Sprintf("request failed with status code %d", resp.StatusCode)
 		if errorResponse.Title != "" {
-			errorMsg = fmt.Sprintf("request failed with status code %d: %s", resp.StatusCode, errorResponse.Title)
-		} else {
-			errorMsg = fmt.Sprintf("request failed with status code %d", resp.StatusCode)
+			errorMsg += fmt.Sprintf(": %s", errorResponse.Title)
+		}
+		if errorResponse.Detail != "" {
+			errorMsg += fmt.Sprintf(" %s", errorResponse.Detail)
 		}
 		if errorResponse.TraceID != "" {
 			errorMsg += " (Trace ID: " + errorResponse.TraceID + ")"
