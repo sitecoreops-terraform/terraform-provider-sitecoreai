@@ -1,6 +1,6 @@
 module github.com/sitecoreops-terraform/terraform-provider-sitecoreai
 
-go 1.25.0
+go 1.26.1
 
 require github.com/hashicorp/terraform-plugin-framework v1.19.0
 
